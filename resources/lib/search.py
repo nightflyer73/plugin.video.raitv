@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+Ôªø# -*- coding: utf-8 -*-
 import sys
 import urllib
 import urllib2
@@ -20,9 +20,9 @@ class Search:
         "Rai Sport": "Tematica:spt",
         "Rai Parlamento": "PageOB:Page-f3f817b3-1d55-4e99-8c36-464cea859189"}
 
-    tematiche = ["Attualit‡", "Bianco e Nero", "Cinema", "Comici", "Cronaca", "Cucina", "Cultura", "Cultura e Spettacoli", "Economia", "Fiction",
+    tematiche = ["Attualit√†", "Bianco e Nero", "Cinema", "Comici", "Cronaca", "Cucina", "Cultura", "Cultura e Spettacoli", "Economia", "Fiction",
         "Hi tech", "Inchieste", "Incontra", "Interviste", "Istituzioni", "Junior", "Moda", "Musica", "News", "Politica", "Promo", "Reality",
-        "Salute", "Satira", "Scienza", "Societ‡", "Spettacolo", "Sport", "Storia", "Telefilm", "Tempo libero", "Viaggi"]
+        "Salute", "Satira", "Scienza", "Societ√†", "Spettacolo", "Sport", "Storia", "Telefilm", "Tempo libero", "Viaggi"]
 
     def getLastContentByTag(self, tags="", numContents=16, mediaType="Video"):
         # type = "Video"
