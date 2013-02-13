@@ -1,3 +1,7 @@
 [B]1.0.0[/B]
 - first release
 
+[B]1.0.1[/B]
+- now using bigger thumbnails in many sections
+- show thumbnails while playing videos
+- don't show item if video url doesn't exist
