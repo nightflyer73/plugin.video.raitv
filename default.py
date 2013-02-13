@@ -281,7 +281,7 @@ def get_most_visited(tags):
         addLinkItem({"mode": "video",
             "title": item["title"].encode('utf8'),        
             "url": item["url"],
-            "thumbnail": item["image"]}, liStyle)
+            "thumbnail": item["thumb"]}, liStyle)
     #xbmc.executebuiltin("Container.SetViewMode(502)")
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
