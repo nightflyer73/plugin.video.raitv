@@ -175,7 +175,8 @@ def show_replay_epg(channelId, date):
             thumbnailImage=programmes[entry]["image"])
         addLinkItem({"mode": "video",
             "title": programmes[entry]["t"].encode('utf8'),        
-            "url": programmes[entry]["h264"]}, liStyle)   
+            "url": programmes[entry]["h264"],
+            "thumbnail": programmes[entry]["image"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)            
 
 def show_ondemand_root():
@@ -228,7 +229,8 @@ def show_ondemand_items(uniquename, count, mediatype):
                 "date": item["date"]})        
         addLinkItem({"mode": "video",
             "title": item["name"].encode('utf8'),        
-            "url": item["url"]}, liStyle)
+            "url": item["url"],
+            "thumbnail": item["image"]}, liStyle)
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_DATE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)   
     
@@ -261,7 +263,8 @@ def get_last_content_by_tag(tags):
                 "tvshowtitle": item["tvshowtitle"]})
         addLinkItem({"mode": "video",
             "title": item["title"].encode('utf8'),        
-            "url": item["url"]}, liStyle)
+            "url": item["url"],
+            "thumbnail": item["thumb"]}, liStyle)
     #xbmc.executebuiltin("Container.SetViewMode(502)")
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -277,7 +280,8 @@ def get_most_visited(tags):
                 "tvshowtitle": item["tvshowtitle"]})
         addLinkItem({"mode": "video",
             "title": item["title"].encode('utf8'),        
-            "url": item["url"]}, liStyle)
+            "url": item["url"],
+            "thumbnail": item["image"]}, liStyle)
     #xbmc.executebuiltin("Container.SetViewMode(502)")
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -289,6 +293,7 @@ mode = str(params.get("mode", ""))
 behaviour = str(params.get("behaviour", ""))
 url = str(params.get("url", ""))
 title = str(params.get("title", ""))
+thumbnail = str(params.get("thumbnail", ""))
 date = str(params.get("date", ""))
 channelId = str(params.get("channel_id", ""))
 index = str(params.get("index", ""))
@@ -334,7 +339,7 @@ elif mode == "get_last_content_by_tag":
 elif mode == "get_most_visited":
      get_most_visited(tags)     
 elif mode == "video":
-    play_video(title, url)  
+    play_video(title, url, thumbnail)
 else:
     show_root_menu()
 
