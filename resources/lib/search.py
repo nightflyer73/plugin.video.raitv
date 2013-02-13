@@ -44,7 +44,6 @@ class Search:
         
         url = "http://www.rai.tv/StatisticheProxy/proxyPost.jsp?action=mostVisited&days=%s&state=1&records=%s&type=%s&tags=%s&domain=%s" % \
             (str(days), str(numContents), mediaType, tags, domain)
-        print url
         xmldata = urllib2.urlopen(url).read().lstrip()
         dom = minidom.parseString(xmldata)    
         
@@ -66,10 +65,19 @@ class Search:
             thumbNode = node.getElementsByTagName('pathImmagine')
             if thumbNode.length > 0:
                 item["thumb"] = self._baseurl + thumbNode[0].childNodes[0].data
+                # Get bigger thumbnail
+                # Available sizes: /69x52, /105x79, /264x196, /433x325, /
+                item["thumb"] = item["thumb"].replace("/105x79","/264x196")
             else:
                 item["thumb"] = self._nothumb
             # Video URL only!!
-            item["url"] = node.getElementsByTagName('h264')[0].childNodes[0].data
+            urlNode =  node.getElementsByTagName('h264')
+            if urlNode.length > 0:
+                item["url"] = urlNode[0].childNodes[0].data
+            else:
+                # No Video URL!!!
+                # TODO: Handle <web> tag
+                continue
             
             item["tvshowtitle"] = ""
             for tag in node.getElementsByTagName('tag'):
@@ -78,7 +86,7 @@ class Search:
                     break
 
             items.append(item)
-            
+
         return items
 
 
