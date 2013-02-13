@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+ï»¿# -*- coding: utf-8 -*-
 import os
 import sys
 import xbmc
@@ -200,11 +200,11 @@ def show_ondemand_index(index):
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_programme(pageId):
-    liStyle = xbmcgui.ListItem("Più recenti")
+    liStyle = xbmcgui.ListItem("PiÃ¹ recenti")
     addDirectoryItem({"mode": "get_last_content_by_tag",
         "tags": "PageOB:"+pageId}, liStyle)
 
-    liStyle = xbmcgui.ListItem("Più visti")
+    liStyle = xbmcgui.ListItem("PiÃ¹ visti")
     addDirectoryItem({"mode": "get_most_visited",
         "tags": "PageOB:"+pageId}, liStyle)
 
