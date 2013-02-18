@@ -109,14 +109,14 @@ def show_tgr_list(mode, url):
                 "url": item["url"], }, liStyle)
         else:
             liStyle = xbmcgui.ListItem(item["title"])
-            addLinkItem({"mode": "video",
+            addLinkItem({"mode": "play",
                 "title": item["title"],        
                 "url": item["url"]}, liStyle)            
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
-
-def play_video(title, url, thumbailUrl=""):
+def play(title, url, thumbailUrl=""):
     item=xbmcgui.ListItem(title, thumbnailImage=thumbailUrl)
+    # TODO: play other types!!!
     item.setInfo(type="Video", infoLabels={"Title": title})
     xbmc.Player().play(url, item)
 
@@ -173,25 +173,80 @@ def show_replay_epg(channelId, date):
             title = "[COLOR blue]" + entry + " " + programmes[entry]["t"] + "[/COLOR]"
         liStyle = xbmcgui.ListItem(title,
             thumbnailImage=programmes[entry]["image"])
-        addLinkItem({"mode": "video",
+        addLinkItem({"mode": "play",
             "title": programmes[entry]["t"].encode('utf8'),        
             "url": programmes[entry]["h264"],
             "thumbnail": programmes[entry]["image"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)            
 
 def show_ondemand_root():
+    liStyle = xbmcgui.ListItem("Elenco programmi")
+    addDirectoryItem({"mode": "ondemand_list"}, liStyle)
+    liStyle = xbmcgui.ListItem("Cerca un programma")
+    addDirectoryItem({"mode": "ondemand_search_by_name"}, liStyle)
+    liStyle = xbmcgui.ListItem("Cerca programma per canale o editore")
+    addDirectoryItem({"mode": "ondemand_search_by_channel"}, liStyle)
+    liStyle = xbmcgui.ListItem("Cerca programmi per tematica")
+    addDirectoryItem({"mode": "ondemand_search_by_theme"}, liStyle)
+    liStyle = xbmcgui.ListItem("Nuovi programmi")
+    addDirectoryItem({"mode": "ondemand_search_new"}, liStyle)
+    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+
+def show_ondemand_list():
     liStyle = xbmcgui.ListItem("0-9")
-    addDirectoryItem({"mode": "ondemand",
-        "index": "0"}, liStyle)
+    addDirectoryItem({"mode": "ondemand_list", "index": "0"}, liStyle)
     for i in range(26):
         liStyle = xbmcgui.ListItem(chr(ord('A')+i))
-        addDirectoryItem({"mode": "ondemand",
-            "index": chr(ord('a')+i)}, liStyle)
+        addDirectoryItem({"mode": "ondemand_list", "index": chr(ord('a')+i)}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_index(index):
     ondemand = OnDemand()
-    programmes = ondemand.search(index)
+    programmes = ondemand.searchByIndex(index)
+    show_ondemand_programmes(programmes)
+
+def search_ondemand_programmes():
+    kb = xbmc.Keyboard(heading = "Cerca un programma")
+    kb.doModal()
+    if kb.isConfirmed():
+        name = kb.getText()
+        ondemand = OnDemand()
+        programmes = ondemand.searchByName(name)
+        show_ondemand_programmes(programmes)
+
+def show_ondemand_channels():
+    ondemand = OnDemand()
+    for k, v in ondemand.editori.iteritems():
+        liStyle = xbmcgui.ListItem(k)
+        addDirectoryItem({"mode": "ondemand_search_by_channel", "channel_id": v}, liStyle)
+    xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_LABEL)
+    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+
+def show_ondemand_channel(channel):
+    ondemand = OnDemand()
+    programmes = ondemand.searchByChannel(channel)
+    show_ondemand_programmes(programmes)
+
+def show_ondemand_themes():
+    ondemand = OnDemand()
+    for position, tematica in enumerate(ondemand.tematiche):
+        liStyle = xbmcgui.ListItem(tematica)
+        addDirectoryItem({"mode": "ondemand_search_by_theme", 
+            "index": position}, liStyle)
+    xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_LABEL)
+    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+
+def show_ondemand_theme(index):
+    ondemand = OnDemand()
+    programmes = ondemand.searchByTheme(ondemand.tematiche[int(index)])
+    show_ondemand_programmes(programmes)
+
+def show_ondemand_new():
+    ondemand = OnDemand()
+    programmes = ondemand.searchNewProgrammes()
+    show_ondemand_programmes(programmes)
+
+def show_ondemand_programmes(programmes):
     for programme in programmes:
         liStyle = xbmcgui.ListItem(programme["title"],
             thumbnailImage=programme["image"])
@@ -224,11 +279,16 @@ def show_ondemand_items(uniquename, count, mediatype):
     items = ondemand.getItems(uniquename, count, mediatype)
     for item in items:
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["image"])
-        liStyle.setInfo(type="Video", 
-            infoLabels={"title": item["name"],
-                "date": item["date"]})        
-        addLinkItem({"mode": "video",
-            "title": item["name"].encode('utf8'),        
+        if mediatype == "V":
+            liStyle.setInfo(type="Video", 
+                infoLabels={"title": item["name"],
+                    "date": item["date"]})
+        elif mediatype == "A" or mediatype == "P":
+            liStyle.setInfo(type="Audio", 
+                infoLabels={"title": item["name"],
+                    "date": item["date"]})
+        addLinkItem({"mode": "play",
+            "title": item["name"].encode('utf8'),
             "url": item["url"],
             "thumbnail": item["image"]}, liStyle)
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_DATE)
@@ -261,7 +321,7 @@ def get_last_content_by_tag(tags):
                 "date": item["date"],            
                 "plotoutline": item["plotoutline"],
                 "tvshowtitle": item["tvshowtitle"]})
-        addLinkItem({"mode": "video",
+        addLinkItem({"mode": "play",
             "title": item["title"].encode('utf8'),        
             "url": item["url"],
             "thumbnail": item["thumb"]}, liStyle)
@@ -278,7 +338,7 @@ def get_most_visited(tags):
                 "date": item["date"],            
                 "plotoutline": item["plotoutline"],
                 "tvshowtitle": item["tvshowtitle"]})
-        addLinkItem({"mode": "video",
+        addLinkItem({"mode": "play",
             "title": item["title"].encode('utf8'),        
             "url": item["url"],
             "thumbnail": item["thumb"]}, liStyle)
@@ -305,8 +365,10 @@ tags = str(params.get("tags", ""))
 
 if mode == "live_tv":
     show_tv_channels()
+
 elif mode == "live_radio":
     show_radio_stations()
+
 elif mode == "replay":
     if channelId == "":
         show_replay_channels()
@@ -314,15 +376,34 @@ elif mode == "replay":
         show_replay_dates(channelId)
     else:
         show_replay_epg(channelId, date)
+
 elif mode == "ondemand":
-    if index != "":
-        show_ondemand_index(index)
-    elif pageId != "":
+    if pageId != "":
         show_ondemand_programme(pageId)
     elif uniquename != "":
         show_ondemand_items(uniquename, count, mediatype)
     else:
         show_ondemand_root()
+elif mode == "ondemand_list":
+    if index != "":
+        show_ondemand_index(index)
+    else:
+        show_ondemand_list()
+elif mode == "ondemand_search_by_name":
+    search_ondemand_programmes()
+elif mode == "ondemand_search_by_channel":
+    if channelId != "":
+        show_ondemand_channel(channelId)
+    else:
+        show_ondemand_channels()
+elif mode == "ondemand_search_by_theme":
+    if index != "":
+        show_ondemand_theme(index)
+    else:
+        show_ondemand_themes()
+elif mode == "ondemand_search_new":
+    show_ondemand_new()
+
 elif mode == "tg":
     show_tg_root()
 elif mode == "tgr":
@@ -330,16 +411,20 @@ elif mode == "tgr":
         show_tgr_list(mode, url)        
     else:
         show_tgr_root()        
+
 elif mode == "news":
     show_news_providers()
 elif mode == "themes":
     show_themes()
+
 elif mode == "get_last_content_by_tag":
      get_last_content_by_tag(tags)
 elif mode == "get_most_visited":
      get_most_visited(tags)     
-elif mode == "video":
-    play_video(title, url, thumbnail)
+
+elif mode == "play":
+    play(title, url, thumbnail)
+
 else:
     show_root_menu()
 
