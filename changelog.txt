@@ -1,3 +1,11 @@
+[B]1.0.2[/B]
+- search for an on-demand programme by name
+- search for an on-demand programme by channel
+- search for an on-demand programme by theme
+- search for new on-demand programmes
+- fixed a bug when no thumbnail is available
+- fixed a bug when the item count is incorrect in upstream source
+
 [B]1.0.1[/B]
 - now using bigger thumbnails in many sections
 - show thumbnails while playing videos
