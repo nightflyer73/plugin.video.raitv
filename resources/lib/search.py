@@ -25,6 +25,7 @@ class Search:
         "Salute", "Satira", "Scienza", "Società", "Spettacolo", "Sport", "Storia", "Telefilm", "Tempo libero", "Viaggi"]
 
     def getLastContentByTag(self, tags="", numContents=16, mediaType="Video"):
+        # TODO: handle a specific type or all types
         # type = "Video"
         # type = "Audio"
         tags = urllib.quote(tags)
@@ -46,7 +47,7 @@ class Search:
             (str(days), str(numContents), mediaType, tags, domain)
         xmldata = urllib2.urlopen(url).read().lstrip()
         dom = minidom.parseString(xmldata)    
-        
+
         return self.parseResponse(dom)
 
         
@@ -57,28 +58,27 @@ class Search:
             item = {}
             item["title"] = node.getElementsByTagName('titolo')[0].childNodes[0].data
             item["date"] = node.getElementsByTagName('datapubblicazione')[0].childNodes[0].data.replace("/",".")
+            item["itemId"] = node.getElementsByTagName('localid')[0].childNodes[0].data
+            
             descNode = node.getElementsByTagName('descrizione')
             if descNode.length > 0: 
                 item["plotoutline"] = descNode[0].childNodes[0].data
             else:
                 item["plotoutline"] = ""
+            
             thumbNode = node.getElementsByTagName('pathImmagine')
             if thumbNode.length > 0:
                 item["thumb"] = self._baseurl + thumbNode[0].childNodes[0].data
-                # Get bigger thumbnail
-                # Available sizes: /69x52, /105x79, /264x196, /433x325, /
-                item["thumb"] = item["thumb"].replace("/105x79","/264x196")
             else:
                 item["thumb"] = self._nothumb
-            # Video URL only!!
+
+            # Check if Video URL is present
             urlNode =  node.getElementsByTagName('h264')
             if urlNode.length > 0:
                 item["url"] = urlNode[0].childNodes[0].data
             else:
-                # No Video URL!!!
-                # TODO: Handle <web> tag
-                continue
-            
+                item["url"] = ""
+
             item["tvshowtitle"] = ""
             for tag in node.getElementsByTagName('tag'):
                 if tag.childNodes[0].data[:13] == "NomeProgramma":

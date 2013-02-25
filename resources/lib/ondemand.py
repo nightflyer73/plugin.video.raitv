@@ -8,8 +8,8 @@ from operator import itemgetter
 from xml.dom import minidom
 
 class OnDemand:
-    _baseUrl = "http://www.rai.tv"
-    _nothumb = "http://www.rai.tv/dl/RaiTV/2012/images/NoAnteprimaItem.png"
+    baseUrl = "http://www.rai.tv"
+    nothumb = "http://www.rai.tv/dl/RaiTV/2012/images/NoAnteprimaItem.png"
 
     editori = {"Rai1": "RaiUno", "Rai2": "RaiDue", "Rai3": "RaiTre",
                "Rai4": "Rai4", "Rai5": "Rai5", "Rai Gulp": "RaiGulp",
@@ -32,8 +32,7 @@ class OnDemand:
         programmes = self.getProgrammeList()
         result = []
         for programme in programmes:
-            if programme["index"] == index:
-                programme["pageId"] = programme["linkDemand"][25:-5]
+            if programme["index"] == index and programme["nascosto"] == "false":
                 result.append(programme)
         return result
 
@@ -41,8 +40,7 @@ class OnDemand:
         programmes = self.getProgrammeList()
         result = []
         for programme in programmes:
-            if programme["title"].lower().find(name) != -1:
-                programme["pageId"] = programme["linkDemand"][25:-5]
+            if programme["title"].lower().find(name) != -1 and programme["nascosto"] == "false":
                 result.append(programme)
         return result
 
@@ -50,8 +48,7 @@ class OnDemand:
         programmes = self.getProgrammeList()
         result = []
         for programme in programmes:
-            if programme["editore"] == channel:
-                programme["pageId"] = programme["linkDemand"][25:-5]
+            if programme["editore"] == channel and programme["nascosto"] == "false":
                 result.append(programme)
         return result
 
@@ -59,24 +56,32 @@ class OnDemand:
         programmes = self.getProgrammeList()
         result = []
         for programme in programmes:
-            if theme in programme["tematiche"]:
-                programme["pageId"] = programme["linkDemand"][25:-5]
+            if theme in programme["tematiche"] and programme["nascosto"] == "false":
                 result.append(programme)
         return result
 
     def searchNewProgrammes(self):
         programmes = self.getProgrammeList()
-        programmes = sorted(programmes, key = itemgetter("date"), reverse = True)[:10]
+        programmes = sorted(programmes, key = itemgetter("date"), reverse = True)
         result = []
         for programme in programmes:
-                programme["pageId"] = programme["linkDemand"][25:-5]
+            if programme["nascosto"] == "false":
                 result.append(programme)
+            if len(result) == 10:
+                break
         return result
 
-    def getProgrammeSets(self, pageId):
-        url = "http://www.rai.tv/dl/RaiTV/programmi/%s.xml" % pageId
+    def getProgrammeSets(self, path):
+        # get XML url
+        url = self.baseUrl + path
+        url = url.replace("/dl/RaiTV/programmi/page/", "/dl/RaiTV/programmi/")
+        url = url.replace(".html", ".xml")
+        print url
+
         xmldata = urllib2.urlopen(url).read()
         dom = minidom.parseString(xmldata)
+        
+        # TODO: tree is not handled
         programmeSets = []
         for node in dom.getElementsByTagName('set'):
             name = node.attributes["name"].value
@@ -87,81 +92,62 @@ class OnDemand:
                 types = []
 
             for typeoccurrency in types:
-                # handle more than one media type
+                # TODO: handle more than one media type
+                # therefore programmeSet["mediatype"] must be a list
                 mediatype = typeoccurrency.attributes["type"].value
                 occurrency = typeoccurrency.attributes["occurrency"].value
 
                 programmeSet = {}
                 programmeSet["name"] = name
-                programmeSet["count"] = occurrency
                 programmeSet["uniquename"] =  uniquename
                     
-                if mediatype == "RaiTv Media Video Item" and int(occurrency) > 0 :
+                if mediatype == "RaiTv Media Video Item" and int(occurrency) > 0:
                     programmeSet["mediatype"] = "V"
                     programmeSets.append(programmeSet)
-                elif mediatype == "RaiTv Media Audio Item" and int(occurrency) > 0 :
+                elif mediatype == "RaiTv Media Audio Item" and int(occurrency) > 0:
                     programmeSet["mediatype"] = "A"
                     programmeSets.append(programmeSet)
-                elif mediatype == "RaiTv Media Podcast Item" and int(occurrency) > 0 :
+                elif mediatype == "RaiTv Media Podcast Item" and int(occurrency) > 0:
                     programmeSet["mediatype"] = "P"
                     programmeSets.append(programmeSet)
-                elif mediatype == "RaiTv Media Foto Item":
-                    pass
-                    #programmeSet["mediatype"] = "F"
-                    #programmeSets.append(programmeSet)
 
         return programmeSets
 
-    def getItems(self, uniquename, count, mediatype):
+    def getItems(self, uniquename, mediatype):
         items = []
-        i=0
-
-        while len(items) < int(count):
-            try:
-                url = "http://www.rai.tv/dl/RaiTV/programmi/liste/%s-%s-%s.xml" % (uniquename, mediatype, i)
-                xmldata = urllib2.urlopen(url).read()
-            except urllib2.HTTPError, err:
-                if err.code == 404:
-                    # Premature EOF
-                    break
-                else:
-                    raise
-
-            dom = minidom.parseString(xmldata)
-            i = i + 1
+        page = 0
+        
+        while True:
+            url = "http://www.rai.tv/dl/RaiTV/programmi/json/liste/%s-json-%s-%s.html" % (uniquename, mediatype, page)
+            response = json.load(urllib2.urlopen(url))
             
-            for node in dom.getElementsByTagName('item'):
-                item = {}
-                item["name"] = node.attributes['name'].value
-                units = node.getElementsByTagName('units')[0]
-                try:
-                    item["image"] = self._baseUrl + units.getElementsByTagName('imageUnit')[0].getElementsByTagName('image')[0].childNodes[0].data
-                except IndexError:
-                    item["image"] = self._nothumb
-                try:
-                    item["date"] = units.getElementsByTagName('dateUnit')[0].getElementsByTagName('date')[0].childNodes[0].data
-                except IndexError:
-                    item["date"] = node.attributes['createDate'].value
-                
-                if mediatype == "V":
-                    item["url"] = units.getElementsByTagName('videoUnit')[0].getElementsByTagName('url')[0].childNodes[0].data
-                    # if present then get h264 url
-                    attributes = units.getElementsByTagName('videoUnit')[0].getElementsByTagName('attribute')
-                    for attribute in attributes:
-                        if attribute.getElementsByTagName('key')[0].childNodes[0].data == "h264":
-                            item["url"] = attribute.getElementsByTagName('value')[0].childNodes[0].data
-                elif mediatype == "A":
-                    item["url"] = self._baseUrl + units.getElementsByTagName('audioUnit')[0].getElementsByTagName('url')[0].childNodes[0].data
-                elif mediatype == "F":
-                    # do not handle photos
-                    pass
-                elif mediatype == "P":
-                    item["url"] = units.getElementsByTagName('linkUnit')[0].getElementsByTagName('link')[0].childNodes[0].data
-                    
-                items.append(item)
+            items = items + response["list"]
+            
+            page = page + 1
+            if page == int(response["pages"]):
+                break
 
         return items
+        
+    def getMediaUrl(self, uniquename):
+        url = "http://www.rai.tv/dl/RaiTV/programmi/media/%s.xml" % uniquename
+        xmldata = urllib2.urlopen(url).read()
+        dom = minidom.parseString(xmldata)
+        
+        mediaUrl = ""
+        mediatype = dom.getElementsByTagName('item')[0].attributes["type"].value
+        
+        if mediatype == "RaiTv Media Video Item":
+            videoUnit = dom.getElementsByTagName('videoUnit')
+            mediaUrl = videoUnit[0].getElementsByTagName('url')[0].childNodes[0].data
+        elif mediatype == "RaiTv Media Audio Item":
+            audioUnit = dom.getElementsByTagName('audioUnit')
+            mediaUrl = audioUnit[0].getElementsByTagName('url')[0].childNodes[0].data
+        elif mediatype == "RaiTv Media Podcast Item":
+            linkUnit  = dom.getElementsByTagName('linkUnit')
+            mediaUrl = linkUnit[0].getElementsByTagName('link')[0].childNodes[0].data
 
+        return mediaUrl, mediatype
 
 #ondemand = OnDemand()
 #print ondemand.searchByIndex("b")
