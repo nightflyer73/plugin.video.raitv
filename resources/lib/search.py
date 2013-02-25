@@ -24,27 +24,24 @@ class Search:
         "Hi tech", "Inchieste", "Incontra", "Interviste", "Istituzioni", "Junior", "Moda", "Musica", "News", "Politica", "Promo", "Reality",
         "Salute", "Satira", "Scienza", "Società", "Spettacolo", "Sport", "Storia", "Telefilm", "Tempo libero", "Viaggi"]
 
-    def getLastContentByTag(self, tags="", numContents=16, mediaType="Video"):
-        # TODO: handle a specific type or all types
-        # type = "Video"
-        # type = "Audio"
+    def getLastContentByTag(self, tags="", numContents=16):
         tags = urllib.quote(tags)
         domain = "RaiTv"
                 
-        url = "http://www.rai.tv/StatisticheProxy/proxyPost.jsp?action=getLastContentByTag&numContents=%s&type=%s&tags=%s&domain=%s" % \
-              (str(numContents), mediaType, tags, domain)
+        url = "http://www.rai.tv/StatisticheProxy/proxyPost.jsp?action=getLastContentByTag&numContents=%s&tags=%s&domain=%s" % \
+              (str(numContents), tags, domain)
         xmldata = urllib2.urlopen(url).read().lstrip()
         dom = minidom.parseString(xmldata)
  
         return self.parseResponse(dom)
     
     
-    def getMostVisited(self, tags, days=7, numContents=16, mediaType="Video"):
+    def getMostVisited(self, tags, days=7, numContents=16):
         tags = urllib.quote(tags)
         domain = "RaiTv"
         
-        url = "http://www.rai.tv/StatisticheProxy/proxyPost.jsp?action=mostVisited&days=%s&state=1&records=%s&type=%s&tags=%s&domain=%s" % \
-            (str(days), str(numContents), mediaType, tags, domain)
+        url = "http://www.rai.tv/StatisticheProxy/proxyPost.jsp?action=mostVisited&days=%s&state=1&records=%s&tags=%s&domain=%s" % \
+            (str(days), str(numContents), tags, domain)
         xmldata = urllib2.urlopen(url).read().lstrip()
         dom = minidom.parseString(xmldata)    
 
@@ -55,6 +52,11 @@ class Search:
         items = []
         
         for node in dom.getElementsByTagName('content'):
+            # We don't handle photos
+            typeNode = node.getElementsByTagName('type')
+            if typeNode.length >= 1 and typeNode[0].childNodes[0].data == "Foto":
+                continue
+        
             item = {}
             item["title"] = node.getElementsByTagName('titolo')[0].childNodes[0].data
             item["date"] = node.getElementsByTagName('datapubblicazione')[0].childNodes[0].data.replace("/",".")
