@@ -122,25 +122,29 @@ def play(title, url, thumbailUrl="", uniquename="", mediatype="RaiTv Media Video
         ondemand = OnDemand()
         (url, mediatype) = ondemand.getMediaUrl(uniquename)
 
-    print "original: %s" % url
     # Handle RAI relinker
     if url[:53] == "http://mediapolis.rai.it/relinker/relinkerServlet.htm" or \
         url[:56] == "http://mediapolisvod.rai.it/relinker/relinkerServlet.htm":
         relinker = Relinker()
         url = relinker.getURL(url)
-        print "relinked: %s" % url
         
     # Add the server to the URL if missing
     if url !="" and url.find("://") == -1:
         url = ondemand.baseUrl + url
-        print "final: %s" % url
+    print "Playing URL: %s" % url
+
+    # It seems that all .ram files I found are not working
+    # because upstream file is no longer present
+    if url[-4:].lower() == ".ram":
+        dialog = xbmcgui.Dialog()
+        dialog.ok("Errore", "I file RealAudio (.ram) non sono supportati.")
+        return
     
     # Play the item
     item=xbmcgui.ListItem(title, thumbnailImage=thumbailUrl)
     if mediatype == "RaiTv Media Video Item":
         item.setInfo(type="Video", infoLabels={"Title": title})
     elif mediatype == "RaiTv Media Audio Item":
-        # TODO: XBMC doesn't support RAM files?
         item.setInfo(type="Audio", infoLabels={"Title": title})
     xbmc.Player().play(url, item)
 
@@ -236,7 +240,7 @@ def search_ondemand_programmes():
     kb = xbmc.Keyboard(heading = "Cerca un programma")
     kb.doModal()
     if kb.isConfirmed():
-        name = kb.getText()
+        name = kb.getText().decode('utf8')
         ondemand = OnDemand()
         programmes = ondemand.searchByName(name)
         show_ondemand_programmes(programmes)
@@ -306,7 +310,6 @@ def show_ondemand_items(uniquename, mediatype):
     ondemand = OnDemand()
     items = ondemand.getItems(uniquename, mediatype)
     for item in items:
-        print item
         # Change date format
         item["date"] = item["date"].replace("/",".")
         item["date"] = item["date"].replace("-",".")
@@ -325,9 +328,9 @@ def show_ondemand_items(uniquename, mediatype):
 
         if mediatype == "V":
             # Get best video available
-            if "h264" in item:
+            if "h264" in item and item["h264"] != "":
                 url = item["h264"]
-            elif "wmv" in item:
+            elif "wmv" in item and item["wmv"] != "":
                 url = item["wmv"]
             else:
                 url = item["mediaUri"]
@@ -458,6 +461,8 @@ def get_most_visited(tags):
 
 # parameter values
 params = parameters_string_to_dict(sys.argv[2])
+# TODO: support content_type parameter, provided by XBMC Frodo.
+content_type = str(params.get("content_type", ""))
 mode = str(params.get("mode", ""))
 behaviour = str(params.get("behaviour", ""))
 url = str(params.get("url", ""))
