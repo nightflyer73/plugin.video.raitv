@@ -1,3 +1,13 @@
+[B]1.0.3[/B]
+- manage RAI relinker. Now may more videos work.
+- support audio items and podcasts.
+- faster searches in ondemand programme list.
+- don't show hidden item in ondemand programme list.
+- don't crash if content_type parameter is provided at addon startup.
+- more debug strings printed.
+- fixed searching for an ondemand programme with a non ASCII character.
+- small bug fixes.
+
 [B]1.0.2[/B]
 - search for an on-demand programme by name
 - search for an on-demand programme by channel
