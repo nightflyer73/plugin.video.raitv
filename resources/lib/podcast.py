@@ -7,6 +7,7 @@ from xml.parsers import expat
 class Podcast:
     def getItems(self, url):
         # RSS 2.0 only
+        print "Podcast URL: %s" % url
         xmldata = urllib2.urlopen(url).read()
         dom = minidom.parseString(xmldata)
         

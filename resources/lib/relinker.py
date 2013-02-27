@@ -3,6 +3,7 @@ import re
 
 class Relinker:
     def getURL(self, url):
+        print "Relinker URL: %s" % url
         request = urllib2.Request(url, headers={"viaurl" : "www.rai.tv"})
         response = urllib2.urlopen(request)
         headers = response.info()

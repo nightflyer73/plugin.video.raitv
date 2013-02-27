@@ -10,6 +10,7 @@ class Replay:
     def getProgrammes(self, channelId, epgDate):
         channel = self.channels[channelId]      
         url = "http://www.rai.tv/dl/portale/html/palinsesti/replaytv/static/%s_%s.html" % (channel, epgDate)
+        print "Replay TV URL: %s" % url
         response = json.load(urllib2.urlopen(url))
         return response[str(channelId)][epgDate.replace('_', '-')]
 

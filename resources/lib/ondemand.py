@@ -76,12 +76,12 @@ class OnDemand:
         url = self.baseUrl + path
         url = url.replace("/dl/RaiTV/programmi/page/", "/dl/RaiTV/programmi/")
         url = url.replace(".html", ".xml")
-        print url
+        print "Program URL: %s" % url
 
         xmldata = urllib2.urlopen(url).read()
         dom = minidom.parseString(xmldata)
         
-        # TODO: tree is not handled
+        # TODO: blocks are not handled
         programmeSets = []
         for node in dom.getElementsByTagName('set'):
             name = node.attributes["name"].value
@@ -119,6 +119,7 @@ class OnDemand:
         
         while True:
             url = "http://www.rai.tv/dl/RaiTV/programmi/json/liste/%s-json-%s-%s.html" % (uniquename, mediatype, page)
+            print "Item URL: %s" % url
             response = json.load(urllib2.urlopen(url))
             
             items = items + response["list"]
@@ -131,6 +132,7 @@ class OnDemand:
         
     def getMediaUrl(self, uniquename):
         url = "http://www.rai.tv/dl/RaiTV/programmi/media/%s.xml" % uniquename
+        print "Media URL: %s" % url
         xmldata = urllib2.urlopen(url).read()
         dom = minidom.parseString(xmldata)
         
@@ -148,21 +150,3 @@ class OnDemand:
             mediaUrl = linkUnit[0].getElementsByTagName('link')[0].childNodes[0].data
 
         return mediaUrl, mediatype
-
-#ondemand = OnDemand()
-#print ondemand.searchByIndex("b")
-#print ondemand.searchByName("ball")
-#print ondemand.searchByChannel("RaiFiction")
-#print ondemand.searchByTheme("Fiction")
-#print ondemand.searchByTheme("Società")
-#print ondemand.searchNewProgrammes()
-#print ondemand.getProgrammeSets("Page-5b3110f7-b13e-42e5-888d-c35e2119bf34")
-#print ondemand.getItems("ContentSet-d77e7cf9-8688-4826-a9f3-736c9d1790b4", "29", "V")
-#print ondemand.getItems("http://www.rai.tv/dl/RaiTV/programmi/liste/ContentSet-0c3cf090-9562-4de6-b204-39aca4848253-A-0.xml")
-#print ondemand.getProgrammeSets("Page-f48c8dc0-351b-4765-96fa-38904b4ba863")
-#print ondemand.getItems("http://www.rai.tv/dl/RaiTV/programmi/liste/ContentSet-4fe35ccb-6b29-4284-bad5-f9fa7a343b08-F-0.xml")
-#print ondemand.getProgrammeSets("Page-a5ca5744-4390-41e9-925b-e9112705c830")
-#print ondemand.getItems("http://www.rai.tv/dl/RaiTV/programmi/liste/ContentSet-c33f420f-62dc-4ed7-ba26-9684a1f97927-P-0.xml")
-#print ondemand.getItems("http://www.rai.tv/dl/RaiTV/programmi/liste/ContentSet-13474b95-8e91-44e7-b1e0-9cb41387f1e9-V-0.xml")
-#print ondemand.getProgrammeSets("Page-730a4f29-39e3-4796-83dd-236624e79c3f")
-#print ondemand.getItems("http://www.rai.tv/dl/RaiTV/programmi/liste/ContentSet-4565a706-a94d-4387-9083-41a7e458c55c-V-0.xml")

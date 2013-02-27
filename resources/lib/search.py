@@ -91,13 +91,3 @@ class Search:
 
         return items
 
-
-#search = Search()
-#for tematica in search.tematiche:
-#    print tematica
-# Cinema
-#print search.getLastContentByTag("Tematica:"+search.tematiche[2])
-#for k, v in search.newsProviders.iteritems():
-#    print k, "->", v
-#print search.getLastContentByTag(search.newsProviders["Rai Parlamento"])
-
