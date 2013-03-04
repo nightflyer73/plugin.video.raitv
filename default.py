@@ -8,8 +8,6 @@ import xbmcaddon
 import urllib
 import urlparse
 import datetime
-import locale
-import platform
 from resources.lib.tgr import TGR
 from resources.lib.search import Search
 from resources.lib.onair import onAir
@@ -28,12 +26,6 @@ Addon = xbmcaddon.Addon(id=__plugin__)
 
 # plugin handle
 handle = int(sys.argv[1])
-
-# set italian locale
-if  platform.system() == "Windows":
-    locale.setlocale(locale.LC_ALL, 'ita_ita')
-else:
-    locale.setlocale(locale.LC_ALL, 'it_IT')
 
 # utility functions
 def parameters_string_to_dict(parameters):
@@ -175,13 +167,18 @@ def show_replay_channels():
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_replay_dates(channelId):
+    days = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"]
+    months = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", 
+        "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"]
+    
     epgEndDate = datetime.date.today() - datetime.timedelta(days=1)
     epgStartDate = datetime.date.today() - datetime.timedelta(days=7)
-    for single_date in utils.daterange(epgStartDate, epgEndDate):
-        liStyle = xbmcgui.ListItem(single_date.strftime("%A %d %B").capitalize())
+    for day in utils.daterange(epgStartDate, epgEndDate):
+        day_str = days[int(day.strftime("%w"))] + " " + day.strftime("%d") + " " + months[int(day.strftime("%m"))]
+        liStyle = xbmcgui.ListItem(day_str)
         addDirectoryItem({"mode": "replay",
             "channel_id": channelId,
-            "date": single_date.strftime("%Y_%m_%d")}, liStyle)
+            "date": day.strftime("%Y_%m_%d")}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_replay_epg(channelId, date):
