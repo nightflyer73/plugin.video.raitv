@@ -1,3 +1,6 @@
+[B]1.0.4[/B]
+- do not use strftime() to format date according to the Italian locale. Now the addon should work on android and ATV.
+
 [B]1.0.3[/B]
 - manage RAI relinker. Now may more videos work.
 - support audio items and podcasts.
