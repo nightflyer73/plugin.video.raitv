@@ -56,7 +56,7 @@ class Podcast:
                 'description': description, 
                 'length' : length,
                 'thumbnail': thumbnail,
-                'date':  time.strftime("%d.%m.%Y", time.localtime(pubDate)),
+                'date': time.strftime("%d.%m.%Y", time.localtime(pubDate)),
                 'url': url
             })
 
