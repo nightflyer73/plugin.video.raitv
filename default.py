@@ -49,8 +49,7 @@ def show_root_menu():
     ''' Show the plugin root menu '''
     liStyle = xbmcgui.ListItem("Dirette TV")
     addDirectoryItem({"mode": "live_tv"}, liStyle)
-    liStyle = xbmcgui.ListItem("Dirette Radio",
-        thumbnailImage="http://upload.wikimedia.org/wikipedia/it/f/f2/Radiorai_logo_2010.png")
+    liStyle = xbmcgui.ListItem("Dirette Radio")
     addDirectoryItem({"mode": "live_radio"}, liStyle)
     liStyle = xbmcgui.ListItem("Rai Replay")
     addDirectoryItem({"mode": "replay"}, liStyle)
@@ -141,34 +140,31 @@ def play(title, url, thumbailUrl="", uniquename="", mediatype="RaiTv Media Video
     xbmc.Player().play(url, item)
 
 def show_tv_channels():
-    for station in stations.station_info:
-        if station["type"] == "tv":
+    for station in stations.tv_stations:
+        if station["diretta"] == "YES":
             liStyle = xbmcgui.ListItem(station["name"])
             addLinkItem({"mode": "play",
                 "title": station["name"],
-                "url": station["stream"]}, liStyle)
+                "url": station["direttaLink"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_radio_stations():
-    for station in stations.station_info:
-        if station["type"] == "radio":
-            liStyle = xbmcgui.ListItem(station["name"], thumbnailImage=station["logo"])
-            addLinkItem({"mode": "live_radio",
-                "station_id": station["id"]}, liStyle, url=station["stream"])
+    for station in stations.radio_stations:
+        liStyle = xbmcgui.ListItem(station["nome"], thumbnailImage=station["logo_menu"])
+        addLinkItem({"mode": "play",
+            "title": station["nome"],
+            "url": station["link_diretta"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_replay_channels():
-    replay = Replay()
-    channels = replay.getChannels()
-    for channel in channels:
-        liStyle = liStyle = xbmcgui.ListItem(channel["name"], thumbnailImage=channel["icon"])
-        addDirectoryItem({"mode": "replay",
-            "channel_id": channel["id"],
-            "channel_name": channel["name"]}, liStyle)
+    for station in stations.tv_stations:
+        if station["hasReplay"] == "YES":
+            liStyle = liStyle = xbmcgui.ListItem(station["name"], thumbnailImage=station["icon"].replace(".png", "-big.png"))
+            addDirectoryItem({"mode": "replay",
+                "channel_id": station["id"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
-def show_replay_dates(channelId, channelName):
-    # TODO: Get channelName from channelId without doing another HTTP request
+def show_replay_dates(channelId):
     days = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"]
     months = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", 
         "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"]
@@ -180,15 +176,19 @@ def show_replay_dates(channelId, channelName):
         liStyle = xbmcgui.ListItem(day_str)
         addDirectoryItem({"mode": "replay",
             "channel_id": channelId,
-            "channel_name": channelName,
             "date": day.strftime("%Y_%m_%d")}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
-def show_replay_epg(channelId, channelName, date):
-    # TODO: Get channelName from channelId without doing another HTTP request
+def show_replay_epg(channelId, date):
     replay = Replay()
+    
+    channelName = ""
+    for station in stations.tv_stations:
+        if station["id"] == channelId:
+            channelName = station["name"]
+    
     programmes = replay.getProgrammes(channelId, channelName, date)
-
+    
     # sort timetable
     timetable = utils.sortedDictKeys(programmes)
 
@@ -471,7 +471,6 @@ title = str(params.get("title", ""))
 thumbnail = str(params.get("thumbnail", ""))
 date = str(params.get("date", ""))
 channelId = str(params.get("channel_id", ""))
-channelName = str(params.get("channel_name", ""))
 index = str(params.get("index", ""))
 uniquename = str(params.get("uniquename", ""))
 mediatype = str(params.get("mediatype", ""))
@@ -487,9 +486,9 @@ elif mode == "replay":
     if channelId == "":
         show_replay_channels()
     elif date == "":
-        show_replay_dates(channelId, channelName)
+        show_replay_dates(channelId)
     else:
-        show_replay_epg(channelId, channelName, date)
+        show_replay_epg(channelId, date)
         
 elif mode == "nop":
     dialog = xbmcgui.Dialog()
