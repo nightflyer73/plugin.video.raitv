@@ -1,7 +1,5 @@
-import sys
 import urllib
 import urllib2
-import datetime
 import json
 
 class Replay:
