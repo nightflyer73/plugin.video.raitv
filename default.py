@@ -176,7 +176,7 @@ def show_replay_dates(channelId, channelName):
     epgEndDate = datetime.date.today() - datetime.timedelta(days=1)
     epgStartDate = datetime.date.today() - datetime.timedelta(days=7)
     for day in utils.daterange(epgStartDate, epgEndDate):
-        day_str = days[int(day.strftime("%w"))] + " " + day.strftime("%d") + " " + months[int(day.strftime("%m"))]
+        day_str = days[int(day.strftime("%w"))] + " " + day.strftime("%d") + " " + months[int(day.strftime("%m"))-1]
         liStyle = xbmcgui.ListItem(day_str)
         addDirectoryItem({"mode": "replay",
             "channel_id": channelId,
