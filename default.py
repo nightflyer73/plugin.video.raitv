@@ -419,10 +419,10 @@ def get_last_content_by_tag(tags):
         liStyle = xbmcgui.ListItem(item["title"], thumbnailImage=item["thumb"])
         liStyle.setInfo(type="Video", 
             infoLabels={"title": item["title"],
-                "date": item["date"],            
+                "date": item["date"],
                 "plotoutline": item["plotoutline"],
                 "tvshowtitle": item["tvshowtitle"]})
-        if url != "":
+        if item["url"] != "":
             addLinkItem({"mode": "play",
                 "title": item["title"].encode('utf8'),
                 "url":  item["url"],
@@ -445,7 +445,7 @@ def get_most_visited(tags):
                 "date": item["date"],
                 "plotoutline": item["plotoutline"],
                 "tvshowtitle": item["tvshowtitle"]})
-        if url != "":
+        if item["url"] != "":
             addLinkItem({"mode": "play",
                 "title": item["title"].encode('utf8'),
                 "url":  item["url"],
