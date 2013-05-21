@@ -59,7 +59,8 @@ class Search:
         
             item = {}
             item["title"] = node.getElementsByTagName('titolo')[0].childNodes[0].data
-            item["date"] = node.getElementsByTagName('datapubblicazione')[0].childNodes[0].data.replace("/",".")
+            #  "datacreazione" is always present
+            item["date"] = node.getElementsByTagName('datacreazione')[0].childNodes[0].data[:10].replace("/",".")
             item["itemId"] = node.getElementsByTagName('localid')[0].childNodes[0].data
             
             descNode = node.getElementsByTagName('descrizione')
