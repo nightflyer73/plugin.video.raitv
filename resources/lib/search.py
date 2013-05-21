@@ -73,6 +73,8 @@ class Search:
                 item["thumb"] = thumbNode[0].childNodes[0].data
                 if item["thumb"][:4] != "http":
                     item["thumb"] = self._baseurl + item["thumb"]
+                # Always use bigger thumbnail available
+                item["thumb"] = item["thumb"].replace("/105x79","/")
             else:
                 item["thumb"] = self._nothumb
 
