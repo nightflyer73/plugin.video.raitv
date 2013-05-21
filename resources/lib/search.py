@@ -70,7 +70,9 @@ class Search:
             
             thumbNode = node.getElementsByTagName('pathImmagine')
             if thumbNode.length > 0:
-                item["thumb"] = self._baseurl + thumbNode[0].childNodes[0].data
+                item["thumb"] = thumbNode[0].childNodes[0].data
+                if item["thumb"][:4] != "http":
+                    item["thumb"] = self._baseurl + item["thumb"]
             else:
                 item["thumb"] = self._nothumb
 
