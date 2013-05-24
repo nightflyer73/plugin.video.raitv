@@ -1,3 +1,11 @@
+[B]1.0.5[/B]
+- radio and tv channels are no longer static and they retrieved from rai.tv website now.
+- cache the station list for one hour. Now the plugin requires script.common.plugin.cache!!!
+- fixed displaying the wrong month in "Rai Replay".
+- fixed an error where the video url was not used in search result.
+- add baseurl to thumb only if it is not already present.
+- always use bigger thumbnail available.
+
 [B]1.0.4[/B]
 - do not use strftime() to format date according to the Italian locale. Now the addon should work on android and ATV.
 
