@@ -99,7 +99,7 @@ def show_tgr_list(mode, url):
             liStyle = xbmcgui.ListItem(item["title"])
             addDirectoryItem({"mode": "tgr",
                 "behaviour": behaviour,
-                "url": item["url"], }, liStyle)
+                "url": item["url"]}, liStyle)
         else:
             liStyle = xbmcgui.ListItem(item["title"])
             addLinkItem({"mode": "play",
@@ -238,7 +238,8 @@ def show_ondemand_index(index):
     show_ondemand_programmes(programmes)
 
 def search_ondemand_programmes():
-    kb = xbmc.Keyboard(heading = "Cerca un programma")
+    kb = xbmc.Keyboard()
+    kb.setHeading("Cerca un programma")
     kb.doModal()
     if kb.isConfirmed():
         name = kb.getText().decode('utf8')
