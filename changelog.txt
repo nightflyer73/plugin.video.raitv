@@ -1,3 +1,7 @@
+[B]1.0.6[/B]
+- fix in RAI Replay: now RAI Premium programmes work.
+- fix message on keyboard in "Programmi On Demand" search.
+
 [B]1.0.5[/B]
 - radio and tv channels are no longer static and they retrieved from rai.tv website now.
 - cache the station list for one hour. Now the plugin requires script.common.plugin.cache!!!
