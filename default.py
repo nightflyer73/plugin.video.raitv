@@ -185,9 +185,9 @@ def show_replay_epg(channelId, date):
     channelName = ""
     for station in stations.tv_stations:
         if station["id"] == channelId:
-            channelName = station["name"]
+            channelTag = station["tag"]
     
-    programmes = replay.getProgrammes(channelId, channelName, date)
+    programmes = replay.getProgrammes(channelId, channelTag, date)
     
     # sort timetable
     timetable = utils.sortedDictKeys(programmes)
