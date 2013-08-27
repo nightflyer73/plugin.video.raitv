@@ -447,7 +447,7 @@ def show_search_result(items):
             if item["image"][:4] != "http":
                 item["image"] = Search._baseurl + item["image"]
             # Always use bigger thumbnail available
-            if item["image"].find("dl/img/") != -1:
+            if item["image"].find("/dl/img/") != -1 or item["image"].find("/dl/video/") != -1:
                 item["image"] = item["image"].replace("/105x79","/")
         else:
             item["image"] = Search._nothumb
