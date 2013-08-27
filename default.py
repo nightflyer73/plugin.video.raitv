@@ -61,6 +61,8 @@ def show_root_menu():
     addDirectoryItem({"mode": "news"}, liStyle)
     liStyle = xbmcgui.ListItem("Aree tematiche")
     addDirectoryItem({"mode": "themes"}, liStyle)
+    liStyle = xbmcgui.ListItem("Cerca...")
+    addDirectoryItem({"mode": "search"}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_tg_root():
@@ -460,6 +462,35 @@ def get_most_visited(tags):
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
+def search():
+    kb = xbmc.Keyboard()
+    kb.setHeading("Cerca un programma")
+    kb.doModal()
+    if kb.isConfirmed():
+        text = kb.getText().decode('utf8')
+        search = Search()
+        for item in search.searchText(text.encode('utf8')):
+            item["image"] = item["image"].replace("/105x79","/")
+            title = item["name"] + " (" + item["from"] + ")"
+            liStyle = xbmcgui.ListItem(title, thumbnailImage=item["image"])
+            liStyle.setInfo(type="Video",
+                infoLabels={"title": title,
+                    "date": item["date"],
+                    "plotoutline": item["desc"],
+                    "tvshowtitle": item["from"]})
+            if item["h264"] != "":
+                addLinkItem({"mode": "play",
+                    "title": title.encode('utf8'),
+                    "url":  item["h264"],
+                    "thumbnail": item["image"]}, liStyle)
+            else:
+                addLinkItem({"mode": "play",
+                    "title": title.encode('utf8'),
+                    "uniquename": item["itemId"],
+                    "thumbnail": item["image"]}, liStyle)
+        #xbmc.executebuiltin("Container.SetViewMode(502)")
+        xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
+        xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 # parameter values
 params = parameters_string_to_dict(sys.argv[2])
@@ -538,7 +569,10 @@ elif mode == "themes":
 elif mode == "get_last_content_by_tag":
      get_last_content_by_tag(tags)
 elif mode == "get_most_visited":
-     get_most_visited(tags)     
+     get_most_visited(tags)
+
+elif mode == "search":
+    search()
 
 elif mode == "play":
     play(title, url, thumbnail, uniquename)

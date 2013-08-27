@@ -1,5 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 import sys
+import json
 import urllib
 import urllib2
 import httplib
@@ -9,9 +10,9 @@ class Search:
     _baseurl = "http://www.rai.tv"
     _nothumb = "http://www.rai.tv/dl/RaiTV/2012/images/NoAnteprimaItem.png"
     
-    newsArchives = {"TG1": "BlockOB:PublishingBlock-3ad79a68-d0b8-4d12-b28c-7f48f8b3c84a",
-        "TG2": "BlockOB:PublishingBlock-bce157a4-97de-49cd-8948-949a614e4b7d",
-        "TG3": "BlockOB:PublishingBlock-401c09cd-050c-4816-b409-4b73be03a3bb"}
+    newsArchives = {"TG1": "Category:Edizioni integrali:Category-a18c6b01-37cf-4227-940c-e6b9b5dc592b",
+        "TG2": "Category:Edizione integrale:Category-c765744f-e8a0-421c-99b8-35c93555db33",
+        "TG3": "Category:Edizioni del TG3:Category-d404d0c9-fa2c-480f-9f1a-897414487f98"}
     
     newsProviders = {"TG1": "Tematica:TG1",
         "TG2": "Tematica:TG2",
@@ -24,6 +25,18 @@ class Search:
         "Hi tech", "Inchieste", "Incontra", "Interviste", "Istituzioni", "Junior", "Moda", "Musica", "News", "Politica", "Promo", "Reality",
         "Salute", "Satira", "Scienza", "Società", "Spettacolo", "Sport", "Storia", "Telefilm", "Tempo libero", "Viaggi"]
 
+    def searchText(self, text):
+        # numero massimo di record in risposta
+        num = 36
+        # ordina per rilevanza (default su sito web)
+        sort="date:D:L:d1"
+        # ordina per data (default su app android)
+        #sort="date:D:S:d1"
+        url = "http://www.ricerca.rai.it/search?site=raitv&output=xml_no_dtd&proxystylesheet=json&client=json&sort=%s&filter=0&getfields=*&partialfields=videourl&num=%s&q=%s" % (sort, num, urllib.quote_plus(text))
+        print "Search URL: %s" % url
+        response = json.load(urllib2.urlopen(url))
+        return response["list"]
+    
     def getLastContentByTag(self, tags="", numContents=16):
         tags = urllib.quote(tags)
         domain = "RaiTv"
