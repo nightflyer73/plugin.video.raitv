@@ -458,7 +458,7 @@ def show_search_result(items):
         liStyle.setInfo(type="Video", 
             infoLabels={"title": item["name"],
                 "date": item["date"],
-                "plotoutline": item["desc"],
+                "plot": item["desc"],
                 "tvshowtitle": item["from"]})
         
         # Check if Video URL is present
