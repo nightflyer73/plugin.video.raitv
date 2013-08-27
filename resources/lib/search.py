@@ -7,9 +7,9 @@ class Search:
     _baseurl = "http://www.rai.tv"
     _nothumb = "http://www.rai.tv/dl/RaiTV/2012/images/NoAnteprimaItem.png"
     
-    newsArchives = {"TG1": "Category:Edizioni integrali:Category-a18c6b01-37cf-4227-940c-e6b9b5dc592b",
-        "TG2": "Category:Edizione integrale:Category-c765744f-e8a0-421c-99b8-35c93555db33",
-        "TG3": "Category:Edizioni del TG3:Category-d404d0c9-fa2c-480f-9f1a-897414487f98"}
+    newsArchives = {"TG1": "NomeProgramma:TG1^Tematica:Edizioni integrali",
+        "TG2": "NomeProgramma:TG2^Tematica:Edizione integrale",
+        "TG3": "NomeProgramma:TG3^Tematica:Edizioni del TG3"}
     
     newsProviders = {"TG1": "Tematica:TG1",
         "TG2": "Tematica:TG2",
@@ -43,7 +43,6 @@ class Search:
         response = json.load(urllib2.urlopen(url))
         return response["list"]
     
-    
     def getMostVisited(self, tags, days=7, numContents=16):
         tags = urllib.quote(tags)
         domain = "RaiTv"
@@ -53,3 +52,12 @@ class Search:
         print "Search URL: %s" % url
         response = json.load(urllib2.urlopen(url))
         return response["list"]
+
+    def getContent(self, itemId):
+        domain = "RaiTv"
+        
+        url = "http://www.rai.tv/StatisticheProxy/proxy.jsp?action=getContent&domain=%s&xsl=rai_tv-statistiche-json&localId=%s" % \
+            (domain, itemId)
+        print "Search URL: %s" % url
+        response = json.load(urllib2.urlopen(url))
+        return response["list"][0]
