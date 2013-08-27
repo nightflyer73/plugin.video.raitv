@@ -2,31 +2,17 @@ import urllib2
 import re
 
 class Relinker:
-    def getURL(self, url):
-        print "Relinker URL: %s" % url
-        request = urllib2.Request(url, headers={"viaurl" : "www.rai.tv"})
-        response = urllib2.urlopen(request)
-        headers = response.info()
-        headers.dict
+    __USERAGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0"
 
-        if url != response.geturl():
-            # A redirect occured
-            mediaUrl = response.geturl()
-        elif headers["Content-Type"].find("charset=ISO-8859-1") != -1:
-            # Content-Type is misleading!!!
-            body = response.read().strip()
-            # Guess file type from body content
-            if body[:7] == "http://":
-                # Get the URL from the  body
-                mediaUrl = body
-            elif body[:4] == "<ASX":
-                # Parse ASX file and get the first URL in the playlist
-                # XML is often malformed!!!
-                match=re.compile('<REF\s+HREF="(.+?)"').findall(body)
-                mediaUrl = match[0]
-            else:
-                # Media type non supported
-                # e.g. Microsoft Smooth Streaming
-                mediaUrl = ""
-        
+    def __init__(self):
+        opener = urllib2.build_opener()
+        # Use Firefox User-Agent
+        opener.addheaders = [('User-Agent', self.__USERAGENT)]
+        urllib2.install_opener(opener)
+
+    def getURL(self, url):
+        url = url + "&output=20"
+        print "Relinker URL: %s" % url
+        response = urllib2.urlopen(url)
+        mediaUrl = response.read().strip()
         return mediaUrl
