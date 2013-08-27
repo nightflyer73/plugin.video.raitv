@@ -418,49 +418,13 @@ def show_themes():
     
 def get_last_content_by_tag(tags):
     search = Search()
-    for item in search.getLastContentByTag(tags):
-        liStyle = xbmcgui.ListItem(item["title"], thumbnailImage=item["thumb"])
-        liStyle.setInfo(type="Video", 
-            infoLabels={"title": item["title"],
-                "date": item["date"],
-                "plotoutline": item["plotoutline"],
-                "tvshowtitle": item["tvshowtitle"]})
-        if item["url"] != "":
-            addLinkItem({"mode": "play",
-                "title": item["title"].encode('utf8'),
-                "url":  item["url"],
-                "thumbnail": item["thumb"]}, liStyle)
-        else:
-            addLinkItem({"mode": "play",
-                "title": item["title"].encode('utf8'),
-                "uniquename": item["itemId"],
-                "thumbnail": item["thumb"]}, liStyle)
-    #xbmc.executebuiltin("Container.SetViewMode(502)")
-    xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
-    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+    items = search.getLastContentByTag(tags)
+    show_search_result(items)
 
 def get_most_visited(tags):
     search = Search()
-    for item in search.getMostVisited(tags):
-        liStyle = xbmcgui.ListItem(item["title"], thumbnailImage=item["thumb"])
-        liStyle.setInfo(type="Video", 
-            infoLabels={"title": item["title"],
-                "date": item["date"],
-                "plotoutline": item["plotoutline"],
-                "tvshowtitle": item["tvshowtitle"]})
-        if item["url"] != "":
-            addLinkItem({"mode": "play",
-                "title": item["title"].encode('utf8'),
-                "url":  item["url"],
-                "thumbnail": item["thumb"]}, liStyle)
-        else:
-            addLinkItem({"mode": "play",
-                "title": item["title"].encode('utf8'),
-                "uniquename": item["itemId"],
-                "thumbnail": item["thumb"]}, liStyle)
-    #xbmc.executebuiltin("Container.SetViewMode(502)")
-    xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
-    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+    items = search.getMostVisited(tags)
+    show_search_result(items)
 
 def search():
     kb = xbmc.Keyboard()
@@ -469,28 +433,49 @@ def search():
     if kb.isConfirmed():
         text = kb.getText().decode('utf8')
         search = Search()
-        for item in search.searchText(text.encode('utf8')):
-            item["image"] = item["image"].replace("/105x79","/")
-            title = item["name"] + " (" + item["from"] + ")"
-            liStyle = xbmcgui.ListItem(title, thumbnailImage=item["image"])
-            liStyle.setInfo(type="Video",
-                infoLabels={"title": title,
-                    "date": item["date"],
-                    "plotoutline": item["desc"],
-                    "tvshowtitle": item["from"]})
-            if item["h264"] != "":
-                addLinkItem({"mode": "play",
-                    "title": title.encode('utf8'),
-                    "url":  item["h264"],
-                    "thumbnail": item["image"]}, liStyle)
-            else:
-                addLinkItem({"mode": "play",
-                    "title": title.encode('utf8'),
-                    "uniquename": item["itemId"],
-                    "thumbnail": item["image"]}, liStyle)
-        #xbmc.executebuiltin("Container.SetViewMode(502)")
-        xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
-        xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+        items = search.searchText(text.encode('utf8'))
+        show_search_result(items)
+
+def show_search_result(items):
+    for item in items:
+        # We don't handle photos
+        if "type" in item and item["type"] == "Foto":
+            continue
+    
+        if item["image"] != "":
+            # Add baseurl if needed
+            if item["image"][:4] != "http":
+                item["image"] = Search._baseurl + item["image"]
+            # Always use bigger thumbnail available
+            if item["image"].find("dl/img/") != -1:
+                item["image"] = item["image"].replace("/105x79","/")
+        else:
+            item["image"] = Search._nothumb
+        
+        item["date"] = item["date"].replace("/",".")
+        
+        liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["image"])
+        liStyle.setInfo(type="Video", 
+            infoLabels={"title": item["name"],
+                "date": item["date"],
+                "plotoutline": item["desc"],
+                "tvshowtitle": item["from"]})
+        
+        # Check if Video URL is present
+        if item["h264"] != "":
+            addLinkItem({"mode": "play",
+                "title": item["name"].encode('utf8'),
+                "url":  item["h264"],
+                "thumbnail": item["image"]}, liStyle)
+        else:
+            addLinkItem({"mode": "play",
+                "title": item["name"].encode('utf8'),
+                "uniquename": item["itemId"],
+                "thumbnail": item["image"]}, liStyle)
+    
+    #xbmc.executebuiltin("Container.SetViewMode(502)")
+    xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
+    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 # parameter values
 params = parameters_string_to_dict(sys.argv[2])
