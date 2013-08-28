@@ -1,3 +1,10 @@
+[B]1.0.7[/B]
+- text search.
+- lastest editions of TG1, TG2 and TG3 are available again.
+- all searches are now handled using JSON.
+- ugly fix of RAI relinker.
+- try to choose best video format available.
+
 [B]1.0.6[/B]
 - fix in RAI Replay: now RAI Premium programmes work.
 - fix message on keyboard in "Programmi On Demand" search.
