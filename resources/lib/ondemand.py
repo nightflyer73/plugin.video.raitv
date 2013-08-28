@@ -131,22 +131,32 @@ class OnDemand:
         return items
         
     def getMediaUrl(self, uniquename):
-        url = "http://www.rai.tv/dl/RaiTV/programmi/media/%s.xml" % uniquename
+        url = "http://www.rai.tv/dl/RaiTV/programmi/media/%s.html?json" % uniquename
         print "Media URL: %s" % url
-        xmldata = urllib2.urlopen(url).read()
-        dom = minidom.parseString(xmldata)
+        response = json.load(urllib2.urlopen(url))
         
         mediaUrl = ""
-        mediatype = dom.getElementsByTagName('item')[0].attributes["type"].value
+        mediatype = response["type"]
         
         if mediatype == "RaiTv Media Video Item":
-            videoUnit = dom.getElementsByTagName('videoUnit')
-            mediaUrl = videoUnit[0].getElementsByTagName('url')[0].childNodes[0].data
-        elif mediatype == "RaiTv Media Audio Item":
-            audioUnit = dom.getElementsByTagName('audioUnit')
-            mediaUrl = audioUnit[0].getElementsByTagName('url')[0].childNodes[0].data
-        elif mediatype == "RaiTv Media Podcast Item":
-            linkUnit  = dom.getElementsByTagName('linkUnit')
-            mediaUrl = linkUnit[0].getElementsByTagName('link')[0].childNodes[0].data
+            if response["h264"] != "":
+                mediaUrl = response["h264"]
+            elif "wmv" in response and response["wmv"] != "":
+                mediaUrl = response["wmv"]
+            else:
+                mediaUrl = response["mediaUri"]
+        else:
+            # No media URL for audio and podcasts in json
+            url = "http://www.rai.tv/dl/RaiTV/programmi/media/%s.xml" % uniquename
+            print "Media URL: %s" % url
+            xmldata = urllib2.urlopen(url).read()
+            dom = minidom.parseString(xmldata)
+            
+            if mediatype == "RaiTv Media Audio Item":
+                audioUnit = dom.getElementsByTagName('audioUnit')
+                mediaUrl = audioUnit[0].getElementsByTagName('url')[0].childNodes[0].data
+            elif mediatype == "RaiTv Media Podcast Item":
+                linkUnit  = dom.getElementsByTagName('linkUnit')
+                mediaUrl = linkUnit[0].getElementsByTagName('link')[0].childNodes[0].data
 
         return mediaUrl, mediatype
