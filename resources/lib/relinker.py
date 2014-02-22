@@ -2,7 +2,7 @@ import urllib2
 import re
 
 class Relinker:
-    __USERAGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:23.0) Gecko/20100101 Firefox/23.0"
+    __USERAGENT = "Mozilla/5.0 (Linux; Android 4.2.1; Nexus 7 Build/JOP40D) AppleWebKit/535.19 (KHTML, like Gecko) Chrome/18.0.1025.166 Safari/535.19"
 
     def __init__(self):
         opener = urllib2.build_opener()
