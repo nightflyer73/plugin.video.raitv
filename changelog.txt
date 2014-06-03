@@ -1,3 +1,6 @@
+[B]1.0.9[/B]
+- fixed RAI relinker (closes #7).
+
 [B]1.0.8[/B]
 - updated required python API version to 2.1.0: this addon should now work with both XBMC 12 (Frodo) and XBMC 13 (Gotham).
 - changed user agent string: now RAI 5 Replay works again (closes #4 and #5).
