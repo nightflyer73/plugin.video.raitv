@@ -26,7 +26,12 @@ class Relinker:
         # A stream will be returned depending on the UA (and pl parameter?)
         url = url + "&output=20"
         print "Relinker URL: %s" % url
+        
         response = urllib2.urlopen(url)
         mediaUrl = response.read().strip()
+        
+        # Workaround to encode spaces if the relinker don't encode them
+        mediaUrl = mediaUrl.replace(" ", "%20")
+        
         return mediaUrl
         
