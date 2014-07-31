@@ -1,5 +1,4 @@
 import urllib2
-import re
 
 class Relinker:
     # Rai.tv android app
