@@ -1,3 +1,4 @@
+import urllib
 import urllib2
 
 class Relinker:
@@ -30,8 +31,8 @@ class Relinker:
         response = urllib2.urlopen(url)
         mediaUrl = response.read().strip()
         
-        # Workaround to encode spaces if the relinker don't encode them
-        mediaUrl = mediaUrl.replace(" ", "%20")
+        # Workaround to normalize URL if the relinker doesn't
+        mediaUrl = urllib.quote(mediaUrl, safe="%/:=&?~#+!$,;'@()*[]")
         
         return mediaUrl
         
