@@ -184,7 +184,6 @@ def show_replay_dates(channelId):
 def show_replay_epg(channelId, date):
     replay = Replay()
     
-    channelName = ""
     for station in stations.tv_stations:
         if station["id"] == channelId:
             channelTag = station["tag"]
