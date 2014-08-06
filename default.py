@@ -8,6 +8,7 @@ import xbmcaddon
 import urllib
 import urlparse
 import datetime
+import StorageServer
 from resources.lib.tgr import TGR
 from resources.lib.search import Search
 from resources.lib.onair import onAir
@@ -26,6 +27,11 @@ Addon = xbmcaddon.Addon(id=__plugin__)
 
 # plugin handle
 handle = int(sys.argv[1])
+
+# Cache channels for 1 hour
+cache = StorageServer.StorageServer("plugin.video.raitv", 0) # (Your plugin name, Cache time in hours)
+tv_stations = cache.cacheFunction(stations.get_tv_stations)
+radio_stations = cache.cacheFunction(stations.get_radio_station)
 
 # utility functions
 def parameters_string_to_dict(parameters):
@@ -142,7 +148,7 @@ def play(title, url, thumbailUrl="", uniquename="", mediatype="RaiTv Media Video
     xbmc.Player().play(url, item)
 
 def show_tv_channels():
-    for station in stations.tv_stations:
+    for station in tv_stations:
         if station["diretta"] == "YES":
             liStyle = xbmcgui.ListItem(station["name"], thumbnailImage=station["icon"])
             addLinkItem({"mode": "play",
@@ -151,7 +157,7 @@ def show_tv_channels():
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_radio_stations():
-    for station in stations.radio_stations:
+    for station in radio_stations:
         liStyle = xbmcgui.ListItem(station["nome"], thumbnailImage=station["logo_menu"])
         addLinkItem({"mode": "play",
             "title": station["nome"],
@@ -159,7 +165,7 @@ def show_radio_stations():
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_replay_channels():
-    for station in stations.tv_stations:
+    for station in tv_stations:
         if station["hasReplay"] == "YES":
             liStyle = xbmcgui.ListItem(station["name"], thumbnailImage=station["icon"])
             addDirectoryItem({"mode": "replay",
@@ -184,7 +190,7 @@ def show_replay_dates(channelId):
 def show_replay_epg(channelId, date):
     replay = Replay()
     
-    for station in stations.tv_stations:
+    for station in tv_stations:
         if station["id"] == channelId:
             channelTag = station["tag"]
             break
