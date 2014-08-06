@@ -195,22 +195,47 @@ def show_replay_epg(channelId, date):
     timetable = utils.sortedDictKeys(programmes)
 
     for entry in timetable:
-        if programmes[entry]["h264"] == "":
-            # program is not available
-            title = entry + " " + programmes[entry]["t"]
-            liStyle = xbmcgui.ListItem(title,
-                thumbnailImage=programmes[entry]["image"])
-            addLinkItem({"mode": "nop",
-                "title": programmes[entry]["t"].encode('utf8'),
-                "thumbnail": programmes[entry]["image"]}, liStyle)
+        recording = programmes[entry]
+                
+        title = recording["t"]
+        
+        if recording["d"] != "":
+            plot = recording["d"]
         else:
-            title = "[COLOR blue]" + entry + " " + programmes[entry]["t"] + "[/COLOR]"
-            liStyle = xbmcgui.ListItem(title,
-                thumbnailImage=programmes[entry]["image"])
+            plot = None
+        
+        if recording["image"] != "":
+            thumbnail = recording["image"]
+        else:
+            thumbnail = None
+    
+        if recording["urlTablet"] != "":
+            videoUrl = recording["urlTablet"]
+        elif recording["h264"] != "":
+            videoUrl = recording["h264"]
+        else:
+            videoUrl = None
+        
+        if videoUrl is None:
+            # programme is not available
+            liStyle = xbmcgui.ListItem(entry + " " + title,
+                thumbnailImage=thumbnail)
+            liStyle.setInfo(type="Video", infoLabels={"Title" : title,
+                "Label": title,
+                "Plot": plot})
+            addLinkItem({"mode": "nop",
+                "title": title.encode('utf8'),
+                "thumbnail": thumbnail}, liStyle)
+        else:
+            liStyle = xbmcgui.ListItem("[COLOR blue]" + entry + " " + title + "[/COLOR]",
+                thumbnailImage=thumbnail)
+            liStyle.setInfo(type="Video", infoLabels={"Title" : title,
+                "Label": title,
+                "Plot": plot})
             addLinkItem({"mode": "play",
-                "title": programmes[entry]["t"].encode('utf8'),        
-                "url": programmes[entry]["h264"],
-                "thumbnail": programmes[entry]["image"]}, liStyle)
+                "title": title.encode('utf8'),
+                "url": videoUrl,
+                "thumbnail": thumbnail}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_root():
