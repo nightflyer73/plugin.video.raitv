@@ -187,6 +187,7 @@ def show_replay_epg(channelId, date):
     for station in stations.tv_stations:
         if station["id"] == channelId:
             channelTag = station["tag"]
+            break
     
     programmes = replay.getProgrammes(channelId, channelTag, date)
     
