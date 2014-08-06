@@ -144,7 +144,7 @@ def play(title, url, thumbailUrl="", uniquename="", mediatype="RaiTv Media Video
 def show_tv_channels():
     for station in stations.tv_stations:
         if station["diretta"] == "YES":
-            liStyle = xbmcgui.ListItem(station["name"])
+            liStyle = xbmcgui.ListItem(station["name"], thumbnailImage=station["icon"])
             addLinkItem({"mode": "play",
                 "title": station["name"],
                 "url": station["direttaLink"]}, liStyle)
@@ -161,7 +161,7 @@ def show_radio_stations():
 def show_replay_channels():
     for station in stations.tv_stations:
         if station["hasReplay"] == "YES":
-            liStyle = liStyle = xbmcgui.ListItem(station["name"], thumbnailImage=station["icon"].replace(".png", "-big.png"))
+            liStyle = xbmcgui.ListItem(station["name"], thumbnailImage=station["icon"])
             addDirectoryItem({"mode": "replay",
                 "channel_id": station["id"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)

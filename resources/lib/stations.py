@@ -8,6 +8,8 @@ def get_tv_stations():
     channels = response["Channels"]
     
     for channel in channels:
+        channel["icon"] = channel["icon"].replace(".png", "-big.png")
+        
         # Force replay availability for Rai Gulp and Rai YoYo
         if channel["name"] in ("Rai Gulp", "Rai Yoyo"):
             channel["hasReplay"] = "YES"
