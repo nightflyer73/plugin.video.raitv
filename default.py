@@ -306,10 +306,10 @@ def show_ondemand_new():
 
 def show_ondemand_programmes(programmes):
     for programme in programmes:
-        liStyle = xbmcgui.ListItem(programme["title"],
-            thumbnailImage=programme["image"])
+        liStyle = xbmcgui.ListItem(programme["title"])
         addDirectoryItem({"mode": "ondemand",
             "url": programme["linkDemand"]}, liStyle)
+    xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_programme(url):
