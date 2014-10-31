@@ -16,10 +16,12 @@ class OnDemand:
                "Radio1": "Radio1", "Radio2": "Radio2", "Radio3": "Radio3",
                "WebRadio 6": "WebRadio6", "WebRadio 7": "WebRadio7", "WebRadio 8": "WebRadio8"}
 
-
-    tematiche = ["Attualità", "Bianco e Nero", "Cinema", "Comici", "Cronaca", "Cucina", "Cultura", "Cultura e Spettacoli", "Economia", "Fiction",
-        "Hi tech", "Inchieste", "Incontra", "Interviste", "Istituzioni", "Junior", "Moda", "Musica", "News", "Politica", "Promo", "Reality",
-        "Salute", "Satira", "Scienza", "Società", "Spettacolo", "Sport", "Storia", "Telefilm", "Tempo libero", "Viaggi"]
+    tematiche = ["Arte", "Bianco e Nero", "Cartoni", "Cinema", "Comici", "Cronaca", "Cucina", 
+        "Cultura", "Economia", "Fiction", "Hi tech", "Inchieste", "Incontra", "Interviste",
+        "Intrattenimento", "Istituzioni", "Junior", "Moda", "Musica", "News", "Politica", "Promo", 
+        "Radio 2 Cult", "Reality", "Religione", "Salute", "Satira", "Scienza", "Sociale", u"Società", 
+        "Speciali Radio3", "Spettacolo", "Sport", "Storia", "Teatro", "Telefilm", "Tempo libero", 
+        "Viaggi"]
     
     def getProgrammeList(self):
         url = "http://www.rai.tv/dl/ricerca_programmi/rai_tv-ricerca-programmi.json"
