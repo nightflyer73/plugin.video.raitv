@@ -61,7 +61,8 @@ class OnDemand:
         return result
 
     def searchNewProgrammes(self):
-        programmes = self.getProgrammeList()
+        url = "http://www.rai.tv/dl/RaiTV/programmi/ricerca/ContentSet-6445de64-d321-476c-a890-ae4ed32c729e-darivedere.html"
+        programmes = json.load(urllib2.urlopen(url))
         programmes = sorted(programmes, key = itemgetter("date"), reverse = True)
         result = []
         for programme in programmes:
