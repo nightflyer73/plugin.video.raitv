@@ -10,11 +10,12 @@ class OnDemand:
 
     editori = {"Rai1": "RaiUno", "Rai2": "RaiDue", "Rai3": "RaiTre",
                "Rai4": "Rai4", "Rai5": "Rai5", "Rai Gulp": "RaiGulp",
-               "Rai Yoyo": "RaiYoYo", "Rai Movie": "RaiMovie",
+               "Rai Yoyo": "RaiYoyo", "Rai Movie": "RaiMovie",
                "Rai Fiction": "RaiFiction", "Rai Edu": "RaiEducational",
                "Rai Sport": "RaiSport", "Rai Internazionale": "RaiInternational",
                "Radio1": "Radio1", "Radio2": "Radio2", "Radio3": "Radio3",
-               "Wr6": "WebRadio 6", "Wr7": "WebRadio 7", "Wr8": "WebRadio 8"}
+               "WebRadio 6": "WebRadio6", "WebRadio 7": "WebRadio7", "WebRadio 8": "WebRadio8"}
+
 
     tematiche = ["Attualità", "Bianco e Nero", "Cinema", "Comici", "Cronaca", "Cucina", "Cultura", "Cultura e Spettacoli", "Economia", "Fiction",
         "Hi tech", "Inchieste", "Incontra", "Interviste", "Istituzioni", "Junior", "Moda", "Musica", "News", "Politica", "Promo", "Reality",
