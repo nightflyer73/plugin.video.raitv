@@ -21,7 +21,6 @@ class OnDemand:
         "Salute", "Satira", "Scienza", "Società", "Spettacolo", "Sport", "Storia", "Telefilm", "Tempo libero", "Viaggi"]
     
     def getProgrammeList(self):
-        # url = "http://www.rai.tv/dl/RaiTV/programmi/ricerca/ContentSet-6445de64-d321-476c-a890-ae4ed32c729e-darivedere.html"
         url = "http://www.rai.tv/dl/ricerca_programmi/rai_tv-ricerca-programmi.json"
         response = json.load(urllib2.urlopen(url))
         return response
