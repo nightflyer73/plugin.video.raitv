@@ -8,10 +8,6 @@ def get_tv_stations():
     
     for channel in channels:
         channel["icon"] = channel["icon"].replace(".png", "-big.png")
-        
-        # Force replay availability for Rai YoYo
-        if channel["name"] == "Rai Yoyo":
-            channel["hasReplay"] = "YES"
     
     return channels
     
