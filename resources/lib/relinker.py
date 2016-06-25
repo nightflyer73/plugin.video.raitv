@@ -4,7 +4,7 @@ import urlparse
 
 class Relinker:
     # Rai.tv android app
-    __USERAGENT = "Apache-HttpClient/UNAVAILABLE (java 1.4)"
+    __USERAGENT = "Android 4.2.2 / RaiTv 1.2.23 /"
     # Firefox 29 on Android
     # __USERAGENT = "Mozilla/5.0 (Android; Mobile; rv:29.0) Gecko/29.0 Firefox/29.0"
     # Firefox 29 on Windows 7
@@ -47,4 +47,4 @@ class Relinker:
         mediaUrl = urllib.quote(mediaUrl, safe="%/:=&?~#+!$,;'@()*[]")
         
         return mediaUrl
-        
+
