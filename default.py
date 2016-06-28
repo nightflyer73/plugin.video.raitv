@@ -123,7 +123,8 @@ def play(title, url, thumbailUrl="", uniquename="", mediatype="RaiTv Media Video
 
     # Handle RAI relinker
     if url[:53] == "http://mediapolis.rai.it/relinker/relinkerServlet.htm" or \
-        url[:56] == "http://mediapolisvod.rai.it/relinker/relinkerServlet.htm":
+        url[:56] == "http://mediapolisvod.rai.it/relinker/relinkerServlet.htm" or \
+        url[:58] == "http://mediapolisevent.rai.it/relinker/relinkerServlet.htm":
         relinker = Relinker()
         url = relinker.getURL(url)
         
