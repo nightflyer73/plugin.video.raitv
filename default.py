@@ -303,11 +303,7 @@ def show_ondemand_theme(index):
 def show_ondemand_new():
     ondemand = OnDemand()
     programmes = ondemand.searchNewProgrammes()
-    for programme in programmes:
-        liStyle = xbmcgui.ListItem(programme["title"])
-        addDirectoryItem({"mode": "ondemand",
-            "url": programme["linkDemand"]}, liStyle)
-    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+    show_ondemand_programmes(programmes)
 
 def show_ondemand_programmes(programmes):
     for programme in programmes:
