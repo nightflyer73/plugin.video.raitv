@@ -161,3 +161,18 @@ class OnDemand:
                 mediaUrl = linkUnit[0].getElementsByTagName('link')[0].childNodes[0].data
 
         return mediaUrl, mediatype
+
+    def getThumbnail(self, url):
+        if url != "":
+            # Add baseUrl if needed
+            if url[:4] != "http":
+                url = self.baseUrl + url
+            # Always use bigger thumbnail available
+            if url.find("/dl/img/") != -1 or url.find("/dl/video/") != -1:
+                #url = url.replace("/105x79","/300x169")
+                url = url.replace("/105x79","/")
+        else:
+            url = self.nothumb
+        
+        return url
+    

@@ -461,21 +461,14 @@ def search():
         show_search_result(items)
 
 def show_search_result(items):
+    ondemand = OnDemand()
+    
     for item in items:
         # We don't handle photos
         if "type" in item and item["type"] == "Foto":
             continue
-    
-        if item["image"] != "":
-            # Add baseurl if needed
-            if item["image"][:4] != "http":
-                item["image"] = Search._baseurl + item["image"]
-            # Always use bigger thumbnail available
-            if item["image"].find("/dl/img/") != -1 or item["image"].find("/dl/video/") != -1:
-                item["image"] = item["image"].replace("/105x79","/")
-        else:
-            item["image"] = Search._nothumb
-        
+            
+        item["image"] = ondemand.getThumbnail(item["image"])
         item["date"] = item["date"].replace("/",".")
         
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["image"])

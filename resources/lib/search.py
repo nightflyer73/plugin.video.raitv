@@ -4,9 +4,6 @@ import urllib
 import urllib2
 
 class Search:
-    _baseurl = "http://www.rai.tv"
-    _nothumb = "http://www.rai.tv/dl/RaiTV/2012/images/NoAnteprimaItem.png"
-    
     newsArchives = {"TG1": "NomeProgramma:TG1^Tematica:Edizioni integrali",
         "TG2": "NomeProgramma:TG2^Tematica:Edizione integrale",
         "TG3": "NomeProgramma:TG3^Tematica:Edizioni del TG3"}
