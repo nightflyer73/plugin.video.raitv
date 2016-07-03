@@ -167,7 +167,7 @@ class OnDemand:
 
         return mediaUrl, mediatype
 
-    def getThumbnail(self, url):
+    def fixThumbnailUrl(self, url):
         if url != "":
             # Add baseUrl if needed
             if url[:4] != "http":

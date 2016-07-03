@@ -260,7 +260,7 @@ def show_must_watch_list():
     programmes = ondemand.getMustWatchList()
     for programme in programmes:
         if programme["type"] != "RaiTv Media Foto Item":
-            image = ondemand.getThumbnail(programme["image"])
+            image = ondemand.fixThumbnailUrl(programme["image"])
             liStyle = xbmcgui.ListItem(programme["name"], thumbnailImage=image)
             liStyle.setProperty('IsPlayable', 'true')
             addLinkItem({"mode": "play",
@@ -486,7 +486,7 @@ def show_search_result(items):
         if "type" in item and item["type"] == "Foto":
             continue
             
-        item["image"] = ondemand.getThumbnail(item["image"])
+        item["image"] = ondemand.fixThumbnailUrl(item["image"])
         item["date"] = item["date"].replace("/",".")
         
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["image"])
