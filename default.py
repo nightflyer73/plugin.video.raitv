@@ -112,6 +112,7 @@ def show_tgr_list(mode, url):
                 "url": item["url"]}, liStyle)
         else:
             liStyle = xbmcgui.ListItem(item["title"])
+            liStyle.setProperty('IsPlayable', 'true')
             addLinkItem({"mode": "play",
                 "title": item["title"],        
                 "url": item["url"]}, liStyle)            
@@ -143,17 +144,18 @@ def play(title, url, thumbailUrl="", uniquename="", mediatype="RaiTv Media Video
         return
     
     # Play the item
-    item=xbmcgui.ListItem(title, thumbnailImage=thumbailUrl)
+    item=xbmcgui.ListItem(title, path=url)
     if mediatype == "RaiTv Media Video Item":
         item.setInfo(type="Video", infoLabels={"Title": title})
     elif mediatype == "RaiTv Media Audio Item":
         item.setInfo(type="Audio", infoLabels={"Title": title})
-    xbmc.Player().play(url, item)
+    xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=item)
 
 def show_tv_channels():
     for station in tv_stations:
         if station["diretta"] == "YES":
             liStyle = xbmcgui.ListItem(station["name"], thumbnailImage=station["icon"])
+            liStyle.setProperty('IsPlayable', 'true')
             addLinkItem({"mode": "play",
                 "title": station["name"],
                 "url": station["direttaLink"]}, liStyle)
@@ -162,6 +164,7 @@ def show_tv_channels():
 def show_radio_stations():
     for station in radio_stations:
         liStyle = xbmcgui.ListItem(station["nome"], thumbnailImage=station["logo_menu"])
+        liStyle.setProperty('IsPlayable', 'true')
         addLinkItem({"mode": "play",
             "title": station["nome"],
             "url": station["link_diretta"]}, liStyle)
@@ -233,10 +236,10 @@ def show_replay_epg(channelId, date):
             liStyle.setInfo(type="Video", infoLabels={"Title" : title,
                 "Label": title,
                 "Plot": plot})
+            liStyle.setProperty('IsPlayable', 'true')
             addLinkItem({"mode": "play",
                 "title": title.encode('utf8'),
-                "url": videoUrl,
-                "thumbnail": thumbnail}, liStyle)
+                "url": videoUrl}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_root():
@@ -259,10 +262,10 @@ def show_must_watch_list():
         if programme["type"] != "RaiTv Media Foto Item":
             image = ondemand.getThumbnail(programme["image"])
             liStyle = xbmcgui.ListItem(programme["name"], thumbnailImage=image)
+            liStyle.setProperty('IsPlayable', 'true')
             addLinkItem({"mode": "play",
                 "title": programme["name"].encode('utf8'),
-                "url": programme["m3u8"],
-                "thumbnail": image}, liStyle)
+                "url": programme["m3u8"]}, liStyle)
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
@@ -389,25 +392,24 @@ def show_ondemand_items(uniquename, mediatype):
 
             liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=thumb)
             liStyle.setInfo(type="Video", infoLabels=labels)
+            liStyle.setProperty('IsPlayable', 'true')
             if url != "":
                 addLinkItem({"mode": "play",
                     "title": item["name"].encode('utf8'),
-                    "url": url,
-                    "thumbnail": thumb}, liStyle)
+                    "url": url}, liStyle)
             else:
                 addLinkItem({"mode": "play",
                     "title": item["name"].encode('utf8'),
-                    "uniquename": item["itemId"],
-                    "thumbnail": thumb}, liStyle)
+                    "uniquename": item["itemId"]}, liStyle)
         
         elif mediatype == "A":
             liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=thumb)
+            liStyle.setProperty('IsPlayable', 'true')
             liStyle.setInfo(type="Audio", 
                 infoLabels={"title": item["name"], "date": item["date"]})
             addLinkItem({"mode": "play",
                 "title": item["name"].encode('utf8'),
                 "uniquename": item["itemId"],
-                "thumbnail": thumb,
                 "mediatype": "RaiTv Media Audio Item"}, liStyle)
         
         elif mediatype == "P":
@@ -429,10 +431,10 @@ def show_ondemand_items(uniquename, mediatype):
                 
                 liStyle = xbmcgui.ListItem(poditem["title"], thumbnailImage=poditem["thumbnail"])
                 liStyle.setInfo(type="Audio", infoLabels=labels)
+                liStyle.setProperty('IsPlayable', 'true')
                 addLinkItem({"mode": "play",
                     "title": poditem["title"].encode('utf8'),
                     "url": poditem["url"],
-                    "thumbnail":  poditem["thumbnail"],
                     "mediatype": "RaiTv Media Audio Item"}, liStyle)
         
     #xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_DATE)
@@ -488,6 +490,7 @@ def show_search_result(items):
         item["date"] = item["date"].replace("/",".")
         
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["image"])
+        liStyle.setProperty('IsPlayable', 'true')
         liStyle.setInfo(type="Video", 
             infoLabels={"title": item["name"],
                 "date": item["date"],
@@ -498,13 +501,11 @@ def show_search_result(items):
         if item["h264"] != "":
             addLinkItem({"mode": "play",
                 "title": item["name"].encode('utf8'),
-                "url":  item["h264"],
-                "thumbnail": item["image"]}, liStyle)
+                "url":  item["h264"]}, liStyle)
         else:
             addLinkItem({"mode": "play",
                 "title": item["name"].encode('utf8'),
-                "uniquename": item["itemId"],
-                "thumbnail": item["image"]}, liStyle)
+                "uniquename": item["itemId"]}, liStyle)
     
     #xbmc.executebuiltin("Container.SetViewMode(502)")
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
@@ -596,7 +597,7 @@ elif mode == "search":
     search()
 
 elif mode == "play":
-    play(title, url, thumbnail, uniquename)
+    play(title, url, uniquename)
 
 else:
     show_root_menu()
