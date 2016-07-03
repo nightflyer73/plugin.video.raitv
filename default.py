@@ -263,7 +263,6 @@ def show_must_watch_list():
                 "title": programme["name"].encode('utf8'),
                 "url": programme["m3u8"],
                 "thumbnail": image}, liStyle)
-            print "http://www.rai.tv" + programme["image"]
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
