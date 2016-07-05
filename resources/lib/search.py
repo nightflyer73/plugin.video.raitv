@@ -44,7 +44,7 @@ class Search:
         tags = urllib.quote(tags)
         domain = "RaiTv"
         
-        url = "http://www.rai.tv/StatisticheProxy/proxyPost.jsp?action=mostVisited&days=%s&state=1&records=%s&tags=%s&domain=%s%xsl=rai_tv-statistiche-json" % \
+        url = "http://www.rai.tv/StatisticheProxy/proxyPost.jsp?action=mostVisited&days=%s&state=1&records=%s&tags=%s&domain=%s&xsl=rai_tv-statistiche-json" % \
             (str(days), str(numContents), tags, domain)
         print "Search URL: %s" % url
         response = json.load(urllib2.urlopen(url))
