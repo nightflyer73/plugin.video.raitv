@@ -20,12 +20,7 @@ class Search:
         "Salute", "Satira", "Scienza", "Società", "Spettacolo", "Sport", "Storia", "Telefilm", "Tempo libero", "Viaggi"]
 
     def searchText(self, text="", numContents=36):
-        # ordina per rilevanza (default su sito web)
-        sort="date:D:L:d1"
-        # ordina per data (default su app android)
-        #sort="date:D:S:d1"
-        
-        url = "http://www.ricerca.rai.it/search?site=raitv&output=xml_no_dtd&proxystylesheet=json&client=json&sort=%s&filter=0&getfields=*&partialfields=videourl&num=%s&q=%s" % (sort, numContents, urllib.quote_plus(text))
+        url = "http://www.rai.tv/ricerca/raisearchtvjson?num=%s&requiredfields=tipo:video&q=%s" % (numContents, urllib.quote_plus(text))
         print "Search URL: %s" % url
         response = json.load(urllib2.urlopen(url))
         return response["list"]
