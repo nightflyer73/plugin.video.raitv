@@ -6,7 +6,7 @@ from xml.dom import minidom
 
 class OnDemand:
     baseUrl = "http://www.rai.tv"
-    nothumb = "http://www.rai.tv/dl/RaiTV/2012/images/NoAnteprimaItem.png"
+    nothumb = "http://www.rai.tv/dl/RaiTV/images/bkg_novideo.png"
 
     editori = {"Rai1": "RaiUno", "Rai2": "RaiDue", "Rai3": "RaiTre",
                "Rai4": "Rai4", "Rai5": "Rai5", "Rai Gulp": "RaiGulp",
