@@ -510,6 +510,11 @@ def show_search_result(items):
     #xbmc.executebuiltin("Container.SetViewMode(502)")
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+    
+def log_country():
+    ondemand = OnDemand()
+    country = ondemand.getCountry()
+    xbmc.log("Rai.tv geolocation: %s" % country)
 
 # parameter values
 params = parameters_string_to_dict(sys.argv[2])
@@ -600,5 +605,6 @@ elif mode == "play":
     play(title, url, uniquename)
 
 else:
+    log_country()
     show_root_menu()
 

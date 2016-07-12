@@ -22,7 +22,12 @@ class OnDemand:
         "Radio 2 Cult", "Reality", "Religione", "Salute", "Satira", "Scienza", "Sociale", u"Società", 
         "Speciali Radio3", "Spettacolo", "Sport", "Storia", "Teatro", "Telefilm", "Tempo libero", 
         "Viaggi"]
-        
+    
+    def getCountry(self):
+        url = "http://mediapolisgs.rai.it/relinker/relinkerServlet.htm?cont=201342"
+        response = urllib2.urlopen(url).read()
+        return response
+    
     def getMustWatchList(self):
         url = "http://www.rai.tv/dl/RaiTV/ondemand/ContentSet-b17cf69b-c1c2-4026-9444-1364a9c3193e.html?json"
         response = json.load(urllib2.urlopen(url))
