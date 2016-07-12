@@ -388,7 +388,7 @@ def show_ondemand_items(uniquename, mediatype):
             
             # Get length, if present
             if item["length"] != "":
-                labels["duration"] = int(item["length"][:2]) * 60 + int(item["length"][3:5])
+                labels["duration"] = int(item["length"][:2]) * 3600 + int(item["length"][3:5]) * 60 +  int(item["length"][6:8])
 
             liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=thumb)
             liStyle.setInfo(type="Video", infoLabels=labels)
