@@ -17,16 +17,3 @@ class onAir:
         io = StringIO(text)
         response = json.load(io)
         return response["xml"]["radio"]
-
-##onair = onAir()
-###epg = onair.getNowNext()
-###print epg["curr"]["radio 1"]["titolo"]
-###print epg["curr"]["radio 1"]["ora"]
-###print epg["next"]["radio 1"]["titolo"]
-###print epg["next"]["radio 1"]["ora"]
-##
-###for station in epg["curr"].keys():
-###    print station
-##print onair.getNowNextWR("fd5")["now_playing"]["music"]["title"]
-##print onair.getNowNextWR("fd5")["next_event"][0]["music"]["title"]
-
