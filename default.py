@@ -211,7 +211,11 @@ def show_replay_epg(channelId, date):
         
         title = recording["t"]
         plot = recording["d"]
-        thumbnail = recording["image"]
+        thumb = recording["image"]
+        
+        # Add the server to the URL if missing
+        if thumb[:7] != "http://":
+            thumb =  "http://" + thumb
         
         if recording["urlTablet"] != "":
             videoUrl = recording["urlTablet"]
@@ -223,16 +227,16 @@ def show_replay_epg(channelId, date):
         if videoUrl is None:
             # programme is not available
             liStyle = xbmcgui.ListItem(entry + " " + title,
-                thumbnailImage=thumbnail)
+                thumbnailImage=thumb)
             liStyle.setInfo(type="Video", infoLabels={"Title" : title,
                 "Label": title,
                 "Plot": plot})
             addLinkItem({"mode": "nop",
                 "title": title.encode('utf8'),
-                "thumbnail": thumbnail}, liStyle)
+                "thumbnail": thumb}, liStyle)
         else:
             liStyle = xbmcgui.ListItem("[COLOR blue]" + entry + " " + title + "[/COLOR]",
-                thumbnailImage=thumbnail)
+                thumbnailImage=thumb)
             liStyle.setInfo(type="Video", infoLabels={"Title" : title,
                 "Label": title,
                 "Plot": plot})
@@ -260,8 +264,8 @@ def show_must_watch_list():
     programmes = ondemand.getMustWatchList()
     for programme in programmes:
         if programme["type"] != "RaiTv Media Foto Item":
-            image = ondemand.fixThumbnailUrl(programme["image"])
-            liStyle = xbmcgui.ListItem(programme["name"], thumbnailImage=image)
+            thumb = ondemand.fixThumbnailUrl(programme["image"])
+            liStyle = xbmcgui.ListItem(programme["name"], thumbnailImage=thumb)
             liStyle.setProperty('IsPlayable', 'true')
             addLinkItem({"mode": "play",
                 "title": programme["name"].encode('utf8'),
@@ -485,11 +489,23 @@ def show_search_result(items):
         # We don't handle photos
         if "type" in item and item["type"] == "Foto":
             continue
-            
-        item["image"] = ondemand.fixThumbnailUrl(item["image"])
+
+        # Get best thumbnail available
+        if "thumb" in item and item["thumb"] != "":
+            thumb = item["thumb"]
+        elif "image" in item and item["image"] != "":
+            thumb = item["image"]
+        else:
+            thumb = ondemand.nothumb
+        
+        # Add the server to the URL if missing
+        if thumb[:7] != "http://":
+            thumb = ondemand.baseUrl + thumb
+        
+        #thumb = ondemand.fixThumbnailUrl(item["image"])
         item["date"] = item["date"].replace("/",".")
         
-        liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["image"])
+        liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=thumb)
         liStyle.setProperty('IsPlayable', 'true')
         liStyle.setInfo(type="Video", 
             infoLabels={"title": item["name"],
