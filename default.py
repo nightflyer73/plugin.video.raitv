@@ -226,7 +226,7 @@ def show_replay_epg(channelId, date):
         
         if videoUrl is None:
             # programme is not available
-            liStyle = xbmcgui.ListItem(entry + " " + title,
+            liStyle = xbmcgui.ListItem(entry + " [I]" + title + "[/I]",
                 thumbnailImage=thumb)
             liStyle.setInfo(type="Video", infoLabels={"Title" : title,
                 "Label": title,
@@ -235,7 +235,7 @@ def show_replay_epg(channelId, date):
                 "title": title.encode('utf8'),
                 "thumbnail": thumb}, liStyle)
         else:
-            liStyle = xbmcgui.ListItem("[COLOR blue]" + entry + " " + title + "[/COLOR]",
+            liStyle = xbmcgui.ListItem(entry + " " + title,
                 thumbnailImage=thumb)
             liStyle.setInfo(type="Video", infoLabels={"Title" : title,
                 "Label": title,
