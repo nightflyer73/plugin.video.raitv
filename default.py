@@ -57,7 +57,7 @@ def show_root_menu():
     addDirectoryItem({"mode": "live_tv"}, liStyle)
     liStyle = xbmcgui.ListItem("Dirette Radio")
     addDirectoryItem({"mode": "live_radio"}, liStyle)
-    liStyle = xbmcgui.ListItem("Rai Replay")
+    liStyle = xbmcgui.ListItem("Replay")
     addDirectoryItem({"mode": "replay"}, liStyle)
     liStyle = xbmcgui.ListItem("Programmi On Demand")
     addDirectoryItem({"mode": "ondemand"}, liStyle)
@@ -546,7 +546,7 @@ elif mode == "replay":
         
 elif mode == "nop":
     dialog = xbmcgui.Dialog()
-    dialog.ok("Rai Replay", "Elemento non disponibile")
+    dialog.ok("Replay", "Elemento non disponibile")
 
 elif mode == "ondemand":
     if url != "":
