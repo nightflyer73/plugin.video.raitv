@@ -6,7 +6,7 @@ from xml.dom import minidom
 
 class OnDemand:
     baseUrl = "http://www.rai.tv"
-    nothumb = "http://www.rai.tv/dl/RaiTV/images/bkg_novideo.png"
+    nothumb = "http://www.rai.it/cropgd/256x-/dl/components/img/imgPlaceholder.png"
 
     editori = {"Rai1": "RaiUno", "Rai2": "RaiDue", "Rai3": "RaiTre",
                "Rai4": "Rai4", "Rai5": "Rai5", "Rai Gulp": "RaiGulp",
@@ -182,3 +182,7 @@ class OnDemand:
         
         return url
     
+    def getVideoUrl(self, pathId):
+        response = json.load(urllib2.urlopen("http://www.rai.it" + pathId))
+        url = response["video"]["contentUrl"]
+        return url

@@ -117,23 +117,30 @@ def show_tgr_list(mode, url):
                 "url": item["url"]}, liStyle)            
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
-def play(url, uniquename=""):
+def play(url, uniquename="", pathId=""):
     # Retrieve the file URL if missing
     if uniquename != "":
+        xbmc.log("Uniquename: " + uniquename)
         ondemand = OnDemand()
         (url, mediatype) = ondemand.getMediaUrl(uniquename)
+        
+    if pathId != "":
+        xbmc.log("PathID: " + pathId)
+        ondemand = OnDemand()
+        url = ondemand.getVideoUrl(pathId)
 
     # Handle RAI relinker
     if url[:53] == "http://mediapolis.rai.it/relinker/relinkerServlet.htm" or \
         url[:56] == "http://mediapolisvod.rai.it/relinker/relinkerServlet.htm" or \
         url[:58] == "http://mediapolisevent.rai.it/relinker/relinkerServlet.htm":
+        xbmc.log("Relinker URL: " + url)
         relinker = Relinker()
         url = relinker.getURL(url)
         
     # Add the server to the URL if missing
     if url !="" and url.find("://") == -1:
         url = ondemand.baseUrl + url
-    print "Playing URL: %s" % url
+    xbmc.log("Media URL: " + url)
 
     # It seems that all .ram files I found are not working
     # because upstream file is no longer present
@@ -148,93 +155,87 @@ def play(url, uniquename=""):
 
 def show_tv_channels():
     for station in tv_stations:
-        if station["diretta"] == "YES":
-            liStyle = xbmcgui.ListItem(station["name"], thumbnailImage=station["icon"])
-            liStyle.setProperty('IsPlayable', 'true')
-            addLinkItem({"mode": "play",
-                "url": station["direttaLink"]}, liStyle)
+        liStyle = xbmcgui.ListItem(station["channel"], thumbnailImage=station["transparent-icon"].replace("[RESOLUTION]", "256x-"))
+        liStyle.setProperty('IsPlayable', 'true')
+        addLinkItem({"mode": "play",
+            "url": station["video"]["contentUrl"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_radio_stations():
     for station in radio_stations:
-        liStyle = xbmcgui.ListItem(station["nome"], thumbnailImage=station["logo_menu"])
-        liStyle.setProperty('IsPlayable', 'true')
-        addLinkItem({"mode": "play",
-            "url": station["link_diretta"]}, liStyle)
+        if station["flussi"]["liveAndroid"] != "":
+            liStyle = xbmcgui.ListItem(station["nome"], thumbnailImage="http://www.rai.it" + station["chImage"])
+            liStyle.setProperty('IsPlayable', 'true')
+            addLinkItem({"mode": "play",
+                "url": station["flussi"]["liveAndroid"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
-def show_replay_channels():
-    for station in tv_stations:
-        if station["hasReplay"] == "YES":
-            liStyle = xbmcgui.ListItem(station["name"], thumbnailImage=station["icon"])
-            addDirectoryItem({"mode": "replay",
-                "channel_id": station["id"]}, liStyle)
-    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
-
-def show_replay_dates(channelId):
+def show_replay_dates():
     days = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"]
     months = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", 
         "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"]
     
-    epgEndDate = datetime.date.today() - datetime.timedelta(days=1)
+    epgEndDate = datetime.date.today()
     epgStartDate = datetime.date.today() - datetime.timedelta(days=7)
     for day in utils.daterange(epgStartDate, epgEndDate):
         day_str = days[int(day.strftime("%w"))] + " " + day.strftime("%d") + " " + months[int(day.strftime("%m"))-1]
         liStyle = xbmcgui.ListItem(day_str)
         addDirectoryItem({"mode": "replay",
-            "channel_id": channelId,
-            "date": day.strftime("%Y_%m_%d")}, liStyle)
+            "date": day.strftime("%d-%m-%Y")}, liStyle)
+    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+    
+def show_replay_channels(date):
+    for station in tv_stations:
+        liStyle = xbmcgui.ListItem(station["channel"], thumbnailImage=station["transparent-icon"].replace("[RESOLUTION]", "256x-"))
+        addDirectoryItem({"mode": "replay",
+            "channel_id": station["channel"],
+            "date": date}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_replay_epg(channelId, date):
     replay = Replay()
+    programmes = replay.getProgrammes(channelId, date)
     
-    for station in tv_stations:
-        if station["id"] == channelId:
-            channelTag = station["tag"]
-            break
+    for programme in programmes:
+        if not programme:
+            continue
     
-    programmes = replay.getProgrammes(channelId, channelTag, date)
-    
-    # sort timetable
-    timetable = utils.sortedDictKeys(programmes)
-
-    for entry in timetable:
-        recording = programmes[entry]
+        startTime = programme["timePublished"]
+        title = programme["name"]
         
-        title = recording["t"]
-        plot = recording["d"]
-        thumb = recording["image"]
+        if programme["images"]["landscape"] != "":
+            thumb = programme["images"]["landscape"].replace("[RESOLUTION]", "256x-")
+        elif programme["isPartOf"] and programme["isPartOf"]["images"]["landscape"] != "":
+            thumb = programme["isPartOf"]["images"]["landscape"].replace("[RESOLUTION]", "256x-")
+        else:
+            ondemand = OnDemand()
+            thumb = ondemand.nothumb
         
-        # Add the server to the URL if missing
-        if thumb[:7] != "http://":
-            thumb =  "http://" + thumb
+        plot = programme["description"]
         
-        if recording["urlTablet"] != "":
-            videoUrl = recording["urlTablet"]
-        elif recording["h264"] != "":
-            videoUrl = recording["h264"]
+        if programme["hasVideo"]:
+            videoUrl = programme["pathID"]
         else:
             videoUrl = None
         
         if videoUrl is None:
             # programme is not available
-            liStyle = xbmcgui.ListItem(entry + " [I]" + title + "[/I]",
+            liStyle = xbmcgui.ListItem(startTime + " [I]" + title + "[/I]",
                 thumbnailImage=thumb)
-            liStyle.setInfo(type="Video", infoLabels={"Title" : title,
-                "Label": title,
-                "Plot": plot})
+            # liStyle.setInfo(type="Video", infoLabels={"Title" : title,
+                # "Label": title,
+                # "Plot": plot})
             liStyle.setProperty('IsPlayable', 'true')
             addLinkItem({"mode": "nop"}, liStyle)
         else:
-            liStyle = xbmcgui.ListItem(entry + " " + title,
+            liStyle = xbmcgui.ListItem(startTime + " " + title,
                 thumbnailImage=thumb)
-            liStyle.setInfo(type="Video", infoLabels={"Title" : title,
-                "Label": title,
-                "Plot": plot})
+            # liStyle.setInfo(type="Video", infoLabels={"Title" : title,
+                # "Label": title,
+                # "Plot": plot})
             liStyle.setProperty('IsPlayable', 'true')
             addLinkItem({"mode": "play",
-                "url": videoUrl}, liStyle)
+                "path_id": videoUrl}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_root():
@@ -376,16 +377,16 @@ def show_ondemand_items(uniquename, mediatype):
             else:
                 url = item["mediaUri"]
             
-            labels = {"title": item["name"],
-                "plot": item["desc"],
-                "date": item["date"]}
+            # labels = {"title": item["name"],
+                # "plot": item["desc"],
+                # "date": item["date"]}
             
-            # Get length, if present
-            if item["length"] != "":
-                labels["duration"] = int(item["length"][:2]) * 3600 + int(item["length"][3:5]) * 60 +  int(item["length"][6:8])
+            # # Get length, if present
+            # if item["length"] != "":
+                # labels["duration"] = int(item["length"][:2]) * 3600 + int(item["length"][3:5]) * 60 +  int(item["length"][6:8])
 
             liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=thumb)
-            liStyle.setInfo(type="Video", infoLabels=labels)
+            # liStyle.setInfo(type="Video", infoLabels=labels)
             liStyle.setProperty('IsPlayable', 'true')
             if url != "":
                 addLinkItem({"mode": "play",
@@ -396,8 +397,8 @@ def show_ondemand_items(uniquename, mediatype):
         
         elif mediatype == "A":
             liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=thumb)
-            liStyle.setInfo(type="Audio", 
-                infoLabels={"title": item["name"], "date": item["date"]})
+            # liStyle.setInfo(type="Audio", 
+                # infoLabels={"title": item["name"], "date": item["date"]})
             liStyle.setProperty('IsPlayable', 'true')
             addLinkItem({"mode": "play",
                 "uniquename": item["itemId"]}, liStyle)
@@ -411,16 +412,16 @@ def show_ondemand_items(uniquename, mediatype):
                 if poditem["thumbnail"] == "":
                     poditem["thumbnail"] = thumb
                 
-                labels = {"title": item["name"],
-                    "plot": item["desc"],
-                    "date": item["date"]}
+                # labels = {"title": item["name"],
+                    # "plot": item["desc"],
+                    # "date": item["date"]}
                 
-                # Get length, if present
-                if poditem["length"] != "":
-                    labels["duration"]  = int(poditem["length"][:2]) * 60 + int(poditem["length"][3:5])
+                # # Get length, if present
+                # if poditem["length"] != "":
+                    # labels["duration"]  = int(poditem["length"][:2]) * 60 + int(poditem["length"][3:5])
                 
                 liStyle = xbmcgui.ListItem(poditem["title"], thumbnailImage=poditem["thumbnail"])
-                liStyle.setInfo(type="Audio", infoLabels=labels)
+                # liStyle.setInfo(type="Audio", infoLabels=labels)
                 liStyle.setProperty('IsPlayable', 'true')
                 addLinkItem({"mode": "play",
                     "url": poditem["url"]}, liStyle)
@@ -490,20 +491,26 @@ def show_search_result(items):
         item["date"] = item["date"].replace("/",".")
         
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=thumb)
-        liStyle.setInfo(type="Video", 
-            infoLabels={"title": item["name"],
-                "date": item["date"],
-                "plot": item["desc"],
-                "tvshowtitle": item["from"]})
+        # liStyle.setInfo(type="Video", 
+            # infoLabels={"title": item["name"],
+                # "date": item["date"],
+                # "plot": item["desc"],
+                # "tvshowtitle": item["from"]})
         liStyle.setProperty('IsPlayable', 'true')
         
         # Check if Video URL is present
         if item["h264"] != "":
             addLinkItem({"mode": "play",
                 "url":  item["h264"]}, liStyle)
-        else:
+        elif item["itemId"] != "":
             addLinkItem({"mode": "play",
                 "uniquename": item["itemId"]}, liStyle)
+        else:
+            # extract uniquename from weblink
+            uniquename = item["weblink"][item["weblink"].rfind("/")+1:]
+            uniquename = uniquename.replace(".html", "")
+            addLinkItem({"mode": "play",
+                "uniquename": uniquename}, liStyle)
     
     #xbmc.executebuiltin("Container.SetViewMode(502)")
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
@@ -512,7 +519,7 @@ def show_search_result(items):
 def log_country():
     ondemand = OnDemand()
     country = ondemand.getCountry()
-    xbmc.log("Rai.tv geolocation: %s" % country)
+    xbmc.log("RAI geolocation: %s" % country)
 
 # parameter values
 params = parameters_string_to_dict(sys.argv[2])
@@ -527,6 +534,7 @@ date = str(params.get("date", ""))
 channelId = str(params.get("channel_id", ""))
 index = str(params.get("index", ""))
 uniquename = str(params.get("uniquename", ""))
+pathId = str(params.get("path_id", ""))
 mediatype = str(params.get("mediatype", ""))
 tags = str(params.get("tags", ""))
 
@@ -537,10 +545,10 @@ elif mode == "live_radio":
     show_radio_stations()
 
 elif mode == "replay":
-    if channelId == "":
-        show_replay_channels()
-    elif date == "":
-        show_replay_dates(channelId)
+    if date == "":
+        show_replay_dates()
+    elif channelId == "":
+        show_replay_channels(date)
     else:
         show_replay_epg(channelId, date)
         
@@ -600,7 +608,7 @@ elif mode == "search":
     search()
 
 elif mode == "play":
-    play(url, uniquename)
+    play(url, uniquename, pathId)
 
 else:
     log_country()

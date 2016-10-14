@@ -2,12 +2,8 @@ import urllib2
 import json
 
 class Replay:
-    # Channels at
-    # http://www.rai.tv/dl/RaiTV/iphone/android/smartphone/advertising_config.html
-  
-    def getProgrammes(self, channelId, channelTag, epgDate):
-        url = "http://www.rai.tv/dl/portale/html/palinsesti/replaytv/static/%s_%s.html" % (channelTag, epgDate)
-        print "Replay TV URL: %s" % url
+    def getProgrammes(self, channelName, epgDate):
+        channelTag = channelName.replace(" ", "")
+        url = "http://www.rai.it/dl/palinsesti/Page-e120a813-1b92-4057-a214-15943d95aa68-json.html?canale=%s&giorno=%s" % (channelTag, epgDate)
         response = json.load(urllib2.urlopen(url))
-        return response[str(channelId)][epgDate.replace('_', '-')]
-
+        return response[channelName][0]["palinsesto"][0]["programmi"]
