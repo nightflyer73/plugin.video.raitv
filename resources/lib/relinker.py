@@ -4,15 +4,16 @@ import urlparse
 
 class Relinker:
     # Rai.tv android app
-    __USERAGENT = "Android 4.2.2 / RaiTv 1.2.23 /"
+    # __USERAGENT = "Apache-HttpClient/UNAVAILABLE (java 1.4)"
     # Firefox 29 on Android
     # __USERAGENT = "Mozilla/5.0 (Android; Mobile; rv:29.0) Gecko/29.0 Firefox/29.0"
     # Firefox 29 on Windows 7
     # __USERAGENT = "Mozilla/5.0 (Windows NT 6.1; WOW64; rv:29.0) Gecko/20100101 Firefox/29.0"
     # Firefox 29 on Linux
     # __USERAGENT = "Mozilla/5.0 (X11; Linux x86_64; rv:29.0) Gecko/20100101 Firefox/29.0"
+    # Raiplay android app
+    __USERAGENT = "Android 4.2.2 (smart) / RaiPlay 2.0.4 / WiFi"
     
-
     def __init__(self):
         opener = urllib2.build_opener()
         # Set User-Agent
