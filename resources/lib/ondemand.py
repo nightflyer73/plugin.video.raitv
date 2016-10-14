@@ -87,7 +87,6 @@ class OnDemand:
         url = self.baseUrl + path
         url = url.replace("/dl/RaiTV/programmi/page/", "/dl/RaiTV/programmi/")
         url = url.replace(".html", ".xml")
-        print "Program URL: %s" % url
 
         xmldata = urllib2.urlopen(url).read()
         dom = minidom.parseString(xmldata)
@@ -130,7 +129,6 @@ class OnDemand:
         
         while True:
             url = "http://www.rai.tv/dl/RaiTV/programmi/json/liste/%s-json-%s-%s.html" % (uniquename, mediatype, page)
-            print "Item URL: %s" % url
             response = json.load(urllib2.urlopen(url))
             
             items = items + response["list"]
@@ -143,7 +141,6 @@ class OnDemand:
         
     def getMediaUrl(self, uniquename):
         url = "http://www.rai.tv/dl/RaiTV/programmi/media/%s.html?json" % uniquename
-        print "Media URL: %s" % url
         response = json.load(urllib2.urlopen(url))
         
         mediaUrl = ""
@@ -159,7 +156,6 @@ class OnDemand:
         else:
             # No media URL for audio and podcasts in json
             url = "http://www.rai.tv/dl/RaiTV/programmi/media/%s.xml" % uniquename
-            print "Media URL: %s" % url
             xmldata = urllib2.urlopen(url).read()
             dom = minidom.parseString(xmldata)
             
