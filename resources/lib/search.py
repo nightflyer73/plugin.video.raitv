@@ -44,12 +44,3 @@ class Search:
         print "Search URL: %s" % url
         response = json.load(urllib2.urlopen(url))
         return response["list"]
-
-    def getContent(self, itemId):
-        domain = "RaiTv"
-        
-        url = "http://www.rai.tv/StatisticheProxy/proxy.jsp?action=getContent&domain=%s&xsl=rai_tv-statistiche-json&localId=%s" % \
-            (domain, itemId)
-        print "Search URL: %s" % url
-        response = json.load(urllib2.urlopen(url))
-        return response["list"][0]
