@@ -66,8 +66,6 @@ def show_root_menu():
     addDirectoryItem({"mode": "news"}, liStyle)
     liStyle = xbmcgui.ListItem("Aree tematiche")
     addDirectoryItem({"mode": "themes"}, liStyle)
-    liStyle = xbmcgui.ListItem("Da non perdere")
-    addDirectoryItem({"mode": "must_watch_list"}, liStyle)
     liStyle = xbmcgui.ListItem("Cerca...")
     addDirectoryItem({"mode": "search"}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -248,19 +246,6 @@ def show_ondemand_root():
     addDirectoryItem({"mode": "ondemand_search_by_theme"}, liStyle)
     liStyle = xbmcgui.ListItem("Nuovi programmi")
     addDirectoryItem({"mode": "ondemand_search_new"}, liStyle)
-    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
-    
-def show_must_watch_list():
-    ondemand = OnDemand()
-    programmes = ondemand.getMustWatchList()
-    for programme in programmes:
-        if programme["type"] != "RaiTv Media Foto Item":
-            thumb = ondemand.fixThumbnailUrl(programme["image"])
-            liStyle = xbmcgui.ListItem(programme["name"], thumbnailImage=thumb)
-            liStyle.setProperty('IsPlayable', 'true')
-            addLinkItem({"mode": "play",
-                "url": programme["m3u8"]}, liStyle)
-    xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_list():
@@ -599,9 +584,6 @@ elif mode == "get_last_content_by_tag":
      get_last_content_by_tag(tags)
 elif mode == "get_most_visited":
      get_most_visited(tags)
-
-elif mode == "must_watch_list":
-    show_must_watch_list()
 
 elif mode == "search":
     search()

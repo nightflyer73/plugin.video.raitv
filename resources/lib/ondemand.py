@@ -28,11 +28,6 @@ class OnDemand:
         response = urllib2.urlopen(url).read()
         return response
     
-    def getMustWatchList(self):
-        url = "http://www.rai.tv/dl/RaiTV/ondemand/ContentSet-b17cf69b-c1c2-4026-9444-1364a9c3193e.html?json"
-        response = json.load(urllib2.urlopen(url))
-        return response["list"]
-    
     def getProgrammeList(self):
         url = "http://www.rai.tv/dl/ricerca_programmi/rai_tv-ricerca-programmi.json"
         response = json.load(urllib2.urlopen(url))
