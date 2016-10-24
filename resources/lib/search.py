@@ -4,6 +4,8 @@ import urllib
 import urllib2
 
 class Search:
+    baseUrl = "http://www.rai.it"
+
     newsArchives = {"TG1": "NomeProgramma:TG1^Tematica:Edizioni integrali",
         "TG2": "NomeProgramma:TG2^Tematica:Edizione integrale",
         "TG3": "NomeProgramma:TG3^Tematica:Edizioni del TG3"}
@@ -28,9 +30,11 @@ class Search:
     def getLastContentByTag(self, tags="", numContents=16):
         tags = urllib.quote(tags)
         domain = "RaiTv"
+        #xsl = "rai_tv-statistiche-raiplay-json"
+        xsl = "rai_tv-statistiche-json"
         
-        url = "http://www.rai.tv/StatisticheProxy/proxyPost.jsp?action=getLastContentByTag&numContents=%s&tags=%s&domain=%s&xsl=rai_tv-statistiche-json" % \
-              (str(numContents), tags, domain)
+        url = self.baseUrl +  "/StatisticheProxy/proxyPost.jsp?action=getLastContentByTag&numContents=%s&tags=%s&domain=%s&xsl=%s" % \
+              (str(numContents), tags, domain, xsl)
         print "Search URL: %s" % url
         response = json.load(urllib2.urlopen(url))
         return response["list"]
@@ -38,9 +42,11 @@ class Search:
     def getMostVisited(self, tags, days=7, numContents=16):
         tags = urllib.quote(tags)
         domain = "RaiTv"
+        #xsl = "rai_tv-statistiche-raiplay-json"
+        xsl = "rai_tv-statistiche-json"
         
-        url = "http://www.rai.tv/StatisticheProxy/proxyPost.jsp?action=mostVisited&days=%s&state=1&records=%s&tags=%s&domain=%s&xsl=rai_tv-statistiche-json" % \
-            (str(days), str(numContents), tags, domain)
+        url = self.baseUrl +  "/StatisticheProxy/proxyPost.jsp?action=mostVisited&days=%s&state=1&records=%s&tags=%s&domain=%s&xsl=%s" % \
+            (str(days), str(numContents), tags, domain, xsl)
         print "Search URL: %s" % url
         response = json.load(urllib2.urlopen(url))
         return response["list"]
