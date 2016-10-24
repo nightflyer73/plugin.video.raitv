@@ -11,7 +11,6 @@ import datetime
 import StorageServer
 from resources.lib.tgr import TGR
 from resources.lib.search import Search
-from resources.lib.onair import onAir
 from resources.lib.replay import Replay
 from resources.lib.ondemand import OnDemand
 from resources.lib.relinker import Relinker
