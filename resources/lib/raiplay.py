@@ -32,7 +32,6 @@ class RaiPlay:
     #  PLR programma Page
     def getProgramme(self, url):
         response = json.load(urllib2.urlopen(url))
-        # TODO. filter by [0]["Sets" and log a warning for > 1 blocchi
         return response["Blocks"]
     
     def getContentSet(self, url):
