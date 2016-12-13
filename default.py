@@ -239,11 +239,12 @@ def show_replay_epg(channelId, date):
 def show_ondemand_root():
     raiplay = RaiPlay()
     items = raiplay.getMainMenu()
-    # TODO: add search
     for item in items:
         if item["sub-type"] in ("RaiPlay Tipologia Page", "RaiPlay Genere Page"):
             liStyle = xbmcgui.ListItem(item["name"])
             addDirectoryItem({"mode": "ondemand", "path_id": item["PathID"], "sub_type": item["sub-type"]}, liStyle)
+    liStyle = xbmcgui.ListItem("Cerca")
+    addDirectoryItem({"mode": "ondemand_search_by_name"}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
     
 def show_ondemand_programmes(pathId):
@@ -305,6 +306,23 @@ def show_ondemand_items(url):
         addLinkItem({"mode": "play",
             "path_id": item["pathID"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+    
+def search_ondemand_programmes():
+    kb = xbmc.Keyboard()
+    kb.setHeading("Cerca un programma")
+    kb.doModal()
+    if kb.isConfirmed():
+        name = kb.getText().decode('utf8')
+        xbmc.log(name)
+        raiplay = RaiPlay()
+        dir = raiplay.getProgrammeList(raiplay.baseUrl + raiplay.AzTvShowPath)
+        for letter in dir:
+            for item in dir[letter]:
+                if item["name"].lower().find(name) != -1:
+                    liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
+                    addDirectoryItem({"mode": "ondemand", "path_id": item["PathID"], "sub_type": "PLR programma Page"}, liStyle)
+        xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_LABEL)
+        xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
     
 def show_news_providers():
     search = Search()
@@ -446,6 +464,8 @@ elif mode == "ondemand_list":
         show_ondemand_index(index, pathId)
 elif mode == "ondemand_items":
     show_ondemand_items(url)
+elif mode == "ondemand_search_by_name":
+    search_ondemand_programmes()
 
 elif mode == "tg":
     show_tg_root()

@@ -6,6 +6,7 @@ class RaiPlay:
     # From http://www.raiplay.it/mobile/prod/config/RaiPlay_Config.json
     baseUrl = "http://www.rai.it/"
     menuUrl = "http://www.rai.it/dl/RaiPlay/2016/menu/PublishingBlock-20b274b1-23ae-414f-b3bf-4bdc13b86af2.html?homejson"
+    AzTvShowPath = "/dl/RaiTV/RaiPlayMobile/Prod/Config/programmiAZ-elenco.json"
     nothumb = "http://www.rai.it/cropgd/256x-/dl/components/img/imgPlaceholder.png"
     
     def getCountry(self):
