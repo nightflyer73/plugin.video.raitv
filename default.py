@@ -251,9 +251,9 @@ def show_ondemand_programmes(pathId):
     xbmc.log(pathId)
     raiplay = RaiPlay()
     blocchi = raiplay.getCategory(raiplay.baseUrl + pathId)
-    
-    if blocchi.count > 1:
-        xbmc.log("blocchi > 1")
+
+    if len(blocchi) > 1:
+        xbmc.log("Blocchi: " + str(len(blocchi)))
         
     for item in blocchi[0]["lanci"]:
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
