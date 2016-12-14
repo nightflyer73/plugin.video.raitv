@@ -116,6 +116,7 @@ def show_tgr_list(mode, url):
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def play(url, uniquename="", pathId=""):
+    xbmc.log("Playing...")
     # Retrieve the file URL if missing
     if uniquename != "":
         xbmc.log("Uniquename: " + uniquename)
@@ -191,6 +192,7 @@ def show_replay_channels(date):
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_replay_epg(channelId, date):
+    xbmc.log("Showing EPG for " + channelId + " on " + date)
     replay = Replay()
     programmes = replay.getProgrammes(channelId, date)
     
@@ -248,7 +250,7 @@ def show_ondemand_root():
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
     
 def show_ondemand_programmes(pathId):
-    xbmc.log(pathId)
+    xbmc.log("PathID: " + pathId)
     raiplay = RaiPlay()
     blocchi = raiplay.getCategory(raiplay.baseUrl + pathId)
 
@@ -261,7 +263,7 @@ def show_ondemand_programmes(pathId):
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_list(pathId):
-    xbmc.log(pathId)
+    xbmc.log("PathID: " + pathId)
     liStyle = xbmcgui.ListItem("0-9")
     addDirectoryItem({"mode": "ondemand_list", "index": "0-9", "path_id": pathId}, liStyle)
     for i in range(26):
@@ -270,17 +272,19 @@ def show_ondemand_list(pathId):
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_index(index, pathId):
-    xbmc.log(index)
+    xbmc.log("PathID: " + pathId)
+    xbmc.log("Index: " + index)
     raiplay = RaiPlay()
-    dir = raiplay.getProgrammeList(raiplay.baseUrl + pathId)
+    dir = raiplay.getProgrammeList(raiplay.baseUrl + pathId.replace(" ", "%20"))
     for item in dir[index]:
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
+        #xbmc.log(item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
         addDirectoryItem({"mode": "ondemand", "path_id": item["PathID"], "sub_type": "PLR programma Page"}, liStyle)
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_programme(pathId):
-    xbmc.log(pathId)
+    xbmc.log("PathID: " + pathId)
     raiplay = RaiPlay()
     
     if pathId.find("://") == -1:
@@ -294,14 +298,15 @@ def show_ondemand_programme(pathId):
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_items(url):
-    xbmc.log(url)
+    xbmc.log("ContentSet URL: " + url)
     raiplay = RaiPlay()
     items = raiplay.getContentSet(raiplay.baseUrl + url)
     for item in items:
         title = item["name"]
         if "subtitle" in item and item["subtitle"] != "" and item["subtitle"] != item["name"]:
             title = title + " (" + item["subtitle"] + ")"
-        liStyle = xbmcgui.ListItem(title, thumbnailImage=raiplay.baseUrl + item["images"]["landscape"])
+        #xbmc.log(item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
+        liStyle = xbmcgui.ListItem(title, thumbnailImage=item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
         liStyle.setProperty('IsPlayable', 'true')
         addLinkItem({"mode": "play",
             "path_id": item["pathID"]}, liStyle)
@@ -313,7 +318,7 @@ def search_ondemand_programmes():
     kb.doModal()
     if kb.isConfirmed():
         name = kb.getText().decode('utf8')
-        xbmc.log(name)
+        xbmc.log("Searching for: " + name)
         raiplay = RaiPlay()
         dir = raiplay.getProgrammeList(raiplay.baseUrl + raiplay.AzTvShowPath)
         for letter in dir:
