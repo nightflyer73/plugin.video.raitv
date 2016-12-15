@@ -23,7 +23,6 @@ class Search:
 
     def searchText(self, text="", numContents=36):
         url = "http://www.rai.tv/ricerca/raisearchtvjson?num=%s&requiredfields=tipo:video&q=%s" % (numContents, urllib.quote_plus(text))
-        print "Search URL: %s" % url
         response = json.load(urllib2.urlopen(url))
         return response["list"]
     
@@ -35,7 +34,6 @@ class Search:
         
         url = self.baseUrl +  "/StatisticheProxy/proxyPost.jsp?action=getLastContentByTag&numContents=%s&tags=%s&domain=%s&xsl=%s" % \
               (str(numContents), tags, domain, xsl)
-        print "Search URL: %s" % url
         response = json.load(urllib2.urlopen(url))
         return response["list"]
     
@@ -47,6 +45,5 @@ class Search:
         
         url = self.baseUrl +  "/StatisticheProxy/proxyPost.jsp?action=mostVisited&days=%s&state=1&records=%s&tags=%s&domain=%s&xsl=%s" % \
             (str(days), str(numContents), tags, domain, xsl)
-        print "Search URL: %s" % url
         response = json.load(urllib2.urlopen(url))
         return response["list"]

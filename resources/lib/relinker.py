@@ -38,9 +38,7 @@ class Relinker:
         
         query = urllib.urlencode(qs, True)
         url = urlparse.urlunparse((scheme, netloc, path, params, query, fragment))
-        
-        print "Relinker URL: %s" % url
-        
+                
         response = urllib2.urlopen(url)
         mediaUrl = response.read().strip()
         
