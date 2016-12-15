@@ -311,7 +311,7 @@ def search_ondemand_programmes():
     kb.doModal()
     if kb.isConfirmed():
         name = kb.getText().decode('utf8')
-        xbmc.log("Searching for: " + name)
+        xbmc.log("Searching for programme: " + name)
         raiplay = RaiPlay()
         dir = raiplay.getProgrammeList(raiplay.baseUrl + raiplay.AzTvShowPath)
         for letter in dir:
@@ -341,11 +341,13 @@ def show_themes():
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
     
 def get_last_content_by_tag(tags):
+    xbmc.log("Get latest content for tags: " + tags)
     search = Search()
     items = search.getLastContentByTag(tags)
     show_search_result(items)
 
 def get_most_visited(tags):
+    xbmc.log("Get most visited for tags: " + tags)
     search = Search()
     items = search.getMostVisited(tags)
     show_search_result(items)
