@@ -29,7 +29,7 @@ Addon = xbmcaddon.Addon(id=__plugin__)
 handle = int(sys.argv[1])
 
 # Cache channels for 1 hour
-cache = StorageServer.StorageServer("plugin.video.raitv", 0) # (Your plugin name, Cache time in hours)
+cache = StorageServer.StorageServer("plugin.video.raitv", 1) # (Your plugin name, Cache time in hours)
 tv_stations = cache.cacheFunction(stations.get_tv_stations)
 radio_stations = cache.cacheFunction(stations.get_radio_station)
 
