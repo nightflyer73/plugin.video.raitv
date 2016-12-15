@@ -20,17 +20,11 @@ class Search:
     tematiche = ["Attualità", "Bianco e Nero", "Cinema", "Comici", "Cronaca", "Cucina", "Cultura", "Cultura e Spettacoli", "Economia", "Fiction",
         "Hi tech", "Inchieste", "Incontra", "Interviste", "Istituzioni", "Junior", "Moda", "Musica", "News", "Politica", "Promo", "Reality",
         "Salute", "Satira", "Scienza", "Società", "Spettacolo", "Sport", "Storia", "Telefilm", "Tempo libero", "Viaggi"]
-
-    def searchText(self, text="", numContents=36):
-        url = "http://www.rai.tv/ricerca/raisearchtvjson?num=%s&requiredfields=tipo:video&q=%s" % (numContents, urllib.quote_plus(text))
-        response = json.load(urllib2.urlopen(url))
-        return response["list"]
     
     def getLastContentByTag(self, tags="", numContents=16):
         tags = urllib.quote(tags)
         domain = "RaiTv"
-        #xsl = "rai_tv-statistiche-raiplay-json"
-        xsl = "rai_tv-statistiche-json"
+        xsl = "rai_tv-statistiche-raiplay-json"
         
         url = self.baseUrl +  "/StatisticheProxy/proxyPost.jsp?action=getLastContentByTag&numContents=%s&tags=%s&domain=%s&xsl=%s" % \
               (str(numContents), tags, domain, xsl)
@@ -40,8 +34,7 @@ class Search:
     def getMostVisited(self, tags, days=7, numContents=16):
         tags = urllib.quote(tags)
         domain = "RaiTv"
-        #xsl = "rai_tv-statistiche-raiplay-json"
-        xsl = "rai_tv-statistiche-json"
+        xsl = "rai_tv-statistiche-raiplay-json"
         
         url = self.baseUrl +  "/StatisticheProxy/proxyPost.jsp?action=mostVisited&days=%s&state=1&records=%s&tags=%s&domain=%s&xsl=%s" % \
             (str(days), str(numContents), tags, domain, xsl)

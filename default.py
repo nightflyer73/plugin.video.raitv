@@ -67,8 +67,6 @@ def show_root_menu():
     addDirectoryItem({"mode": "news"}, liStyle)
     liStyle = xbmcgui.ListItem("Aree tematiche")
     addDirectoryItem({"mode": "themes"}, liStyle)
-    liStyle = xbmcgui.ListItem("Cerca...")
-    addDirectoryItem({"mode": "search"}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_tg_root():
@@ -357,29 +355,13 @@ def get_most_visited(tags):
     items = search.getMostVisited(tags)
     show_search_result(items)
 
-def search():
-    kb = xbmc.Keyboard()
-    kb.setHeading("Cerca un programma")
-    kb.doModal()
-    if kb.isConfirmed():
-        text = kb.getText().decode('utf8')
-        search = Search()
-        items = search.searchText(text.encode('utf8'))
-        show_search_result(items)
-
 def show_search_result(items):
     raiplay = RaiPlay()
     
     for item in items:
-        # We don't handle photos
-        if "type" in item and item["type"] == "Foto":
-            continue
-
         # Get best thumbnail available
-        if "thumb" in item and item["thumb"] != "":
-            thumb = item["thumb"]
-        elif "image" in item and item["image"] != "":
-            thumb = item["image"]
+        if item["images"]["landscape"] != "":
+            thumb = item["images"]["landscape"].replace("[RESOLUTION]", "256x-")
         else:
             thumb = raiplay.nothumb
         
@@ -388,30 +370,11 @@ def show_search_result(items):
             thumb = raiplay.baseUrl + thumb
         
         #thumb = ondemand.fixThumbnailUrl(item["image"])
-        item["date"] = item["date"].replace("/",".")
         
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=thumb)
-        # liStyle.setInfo(type="Video", 
-            # infoLabels={"title": item["name"],
-                # "date": item["date"],
-                # "plot": item["desc"],
-                # "tvshowtitle": item["from"]})
         liStyle.setProperty('IsPlayable', 'true')
-        
-        # Check if Video URL is present
-        if item["h264"] != "":
-            addLinkItem({"mode": "play",
-                "url":  item["h264"]}, liStyle)
-        elif item["itemId"] != "":
-            addLinkItem({"mode": "play",
-                "uniquename": item["itemId"]}, liStyle)
-        else:
-            # extract uniquename from weblink
-            uniquename = item["weblink"][item["weblink"].rfind("/")+1:]
-            uniquename = uniquename.replace(".html", "")
-            addLinkItem({"mode": "play",
-                "uniquename": uniquename}, liStyle)
-    
+        addLinkItem({"mode": "play", "url": item["Url"]}, liStyle)
+
     #xbmc.executebuiltin("Container.SetViewMode(502)")
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -489,9 +452,6 @@ elif mode == "get_last_content_by_tag":
      get_last_content_by_tag(tags)
 elif mode == "get_most_visited":
      get_most_visited(tags)
-
-elif mode == "search":
-    search()
 
 elif mode == "play":
     play(url, uniquename, pathId)
