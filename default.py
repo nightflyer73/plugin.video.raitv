@@ -113,13 +113,8 @@ def show_tgr_list(mode, url):
                 "url": item["url"]}, liStyle)            
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
-def play(url, uniquename="", pathId=""):
+def play(url, pathId=""):
     xbmc.log("Playing...")
-    # Retrieve the file URL if missing
-    if uniquename != "":
-        xbmc.log("Uniquename: " + uniquename)
-        # ondemand = OnDemand()
-        # (url, mediatype) = ondemand.getMediaUrl(uniquename)
         
     if pathId != "":
         xbmc.log("PathID: " + pathId)
@@ -394,7 +389,6 @@ url = str(params.get("url", ""))
 date = str(params.get("date", ""))
 channelId = str(params.get("channel_id", ""))
 index = str(params.get("index", ""))
-uniquename = str(params.get("uniquename", ""))
 pathId = str(params.get("path_id", ""))
 subType = str(params.get("sub_type", ""))
 tags = str(params.get("tags", ""))
@@ -454,7 +448,7 @@ elif mode == "get_most_visited":
      get_most_visited(tags)
 
 elif mode == "play":
-    play(url, uniquename, pathId)
+    play(url, pathId)
 
 else:
     log_country()
