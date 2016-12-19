@@ -11,7 +11,6 @@ import datetime
 import StorageServer
 from resources.lib.tgr import TGR
 from resources.lib.search import Search
-from resources.lib.replay import Replay
 from resources.lib.raiplay import RaiPlay
 from resources.lib.relinker import Relinker
 from resources.lib.podcast import Podcast
@@ -29,7 +28,7 @@ handle = int(sys.argv[1])
 
 # Cache channels for 1 hour
 cache = StorageServer.StorageServer("plugin.video.raitv", 1) # (Your plugin name, Cache time in hours)
-tv_stations = cache.cacheFunction(stations.get_tv_stations)
+tv_stations = cache.cacheFunction(RaiPlay().getChannels)
 radio_stations = cache.cacheFunction(stations.get_radio_station)
 
 # utility functions
@@ -185,8 +184,8 @@ def show_replay_channels(date):
 
 def show_replay_epg(channelId, date):
     xbmc.log("Showing EPG for " + channelId + " on " + date)
-    replay = Replay()
-    programmes = replay.getProgrammes(channelId, date)
+    raiplay = RaiPlay()
+    programmes = raiplay.getProgrammes(channelId, date)
     
     for programme in programmes:
         if not programme:
