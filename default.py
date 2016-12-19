@@ -12,9 +12,9 @@ import StorageServer
 from resources.lib.tgr import TGR
 from resources.lib.search import Search
 from resources.lib.raiplay import RaiPlay
+from resources.lib.radiorai import RadioRai
 from resources.lib.relinker import Relinker
 from resources.lib.podcast import Podcast
-import resources.lib.stations as stations
 import resources.lib.utils as utils
 
 # plugin constants
@@ -29,7 +29,7 @@ handle = int(sys.argv[1])
 # Cache channels for 1 hour
 cache = StorageServer.StorageServer("plugin.video.raitv", 1) # (Your plugin name, Cache time in hours)
 tv_stations = cache.cacheFunction(RaiPlay().getChannels)
-radio_stations = cache.cacheFunction(stations.get_radio_station)
+radio_stations = cache.cacheFunction(RadioRai().getChannels)
 
 # utility functions
 def parameters_string_to_dict(parameters):
