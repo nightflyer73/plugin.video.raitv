@@ -14,7 +14,6 @@ from resources.lib.search import Search
 from resources.lib.raiplay import RaiPlay
 from resources.lib.radiorai import RadioRai
 from resources.lib.relinker import Relinker
-from resources.lib.podcast import Podcast
 import resources.lib.utils as utils
 
 # plugin constants
