@@ -139,7 +139,7 @@ def play(url, pathId=""):
         return
     
     # Play the item
-    item=xbmcgui.ListItem(path=url)
+    item=xbmcgui.ListItem(path=url + '|User-Agent=' + urllib.quote_plus(Relinker.UserAgent))
     xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=item)
 
 def show_tv_channels():
