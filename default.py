@@ -143,8 +143,9 @@ def play(url, pathId=""):
     xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=item)
 
 def show_tv_channels():
+    raiplay = RaiPlay()
     for station in tv_stations:
-        liStyle = xbmcgui.ListItem(station["channel"], thumbnailImage=station["transparent-icon"].replace("[RESOLUTION]", "256x-"))
+        liStyle = xbmcgui.ListItem(station["channel"], thumbnailImage=raiplay.getThumbnailUrl(station["transparent-icon"]))
         liStyle.setProperty('IsPlayable', 'true')
         addLinkItem({"mode": "play",
             "url": station["video"]["contentUrl"]}, liStyle)
@@ -174,8 +175,9 @@ def show_replay_dates():
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
     
 def show_replay_channels(date):
+    raiplay = RaiPlay()
     for station in tv_stations:
-        liStyle = xbmcgui.ListItem(station["channel"], thumbnailImage=station["transparent-icon"].replace("[RESOLUTION]", "256x-"))
+        liStyle = xbmcgui.ListItem(station["channel"], thumbnailImage=raiplay.getThumbnailUrl(station["transparent-icon"]))
         addDirectoryItem({"mode": "replay",
             "channel_id": station["channel"],
             "date": date}, liStyle)
@@ -194,11 +196,11 @@ def show_replay_epg(channelId, date):
         title = programme["name"]
         
         if programme["images"]["landscape"] != "":
-            thumb = programme["images"]["landscape"].replace("[RESOLUTION]", "256x-")
+            thumb = raiplay.getThumbnailUrl(programme["images"]["landscape"])
         elif programme["isPartOf"] and programme["isPartOf"]["images"]["landscape"] != "":
-            thumb = programme["isPartOf"]["images"]["landscape"].replace("[RESOLUTION]", "256x-")
+            thumb = raiplay.getThumbnailUrl(programme["isPartOf"]["images"]["landscape"])
         else:
-            thumb = raiplay.nothumb
+            thumb = raiplay.noThumbUrl
         
         plot = programme["description"]
         
@@ -241,7 +243,7 @@ def show_ondemand_programmes(pathId):
         xbmc.log("Blocchi: " + str(len(blocchi)))
         
     for item in blocchi[0]["lanci"]:
-        liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
+        liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"]))
         addDirectoryItem({"mode": "ondemand", "path_id": item["PathID"], "sub_type": item["sub-type"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
@@ -260,7 +262,7 @@ def show_ondemand_index(index, pathId):
     raiplay = RaiPlay()
     dir = raiplay.getProgrammeList(raiplay.baseUrl + pathId.replace(" ", "%20"))
     for item in dir[index]:
-        liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
+        liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"]))
         addDirectoryItem({"mode": "ondemand", "path_id": item["PathID"], "sub_type": "PLR programma Page"}, liStyle)
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -287,7 +289,7 @@ def show_ondemand_items(url):
         title = item["name"]
         if "subtitle" in item and item["subtitle"] != "" and item["subtitle"] != item["name"]:
             title = title + " (" + item["subtitle"] + ")"
-        liStyle = xbmcgui.ListItem(title, thumbnailImage=item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
+        liStyle = xbmcgui.ListItem(title, thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"]))
         liStyle.setProperty('IsPlayable', 'true')
         addLinkItem({"mode": "play",
             "path_id": item["pathID"]}, liStyle)
@@ -305,7 +307,7 @@ def search_ondemand_programmes():
         for letter in dir:
             for item in dir[letter]:
                 if item["name"].lower().find(name) != -1:
-                    liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
+                    liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"]))
                     addDirectoryItem({"mode": "ondemand", "path_id": item["PathID"], "sub_type": "PLR programma Page"}, liStyle)
         xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_LABEL)
         xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -344,17 +346,7 @@ def show_search_result(items):
     raiplay = RaiPlay()
     
     for item in items:
-        # Get best thumbnail available
-        if item["images"]["landscape"] != "":
-            thumb = item["images"]["landscape"].replace("[RESOLUTION]", "256x-")
-        else:
-            thumb = raiplay.nothumb
-        
-        # Add the server to the URL if missing
-        if thumb[:7] != "http://":
-            thumb = raiplay.baseUrl + thumb
-        
-        liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=thumb)
+        liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"])
         liStyle.setProperty('IsPlayable', 'true')
         addLinkItem({"mode": "play", "url": item["Url"]}, liStyle)
 
