@@ -211,17 +211,11 @@ def show_replay_epg(channelId, date):
             # programme is not available
             liStyle = xbmcgui.ListItem(startTime + " [I]" + title + "[/I]",
                 thumbnailImage=thumb)
-            # liStyle.setInfo(type="Video", infoLabels={"Title" : title,
-                # "Label": title,
-                # "Plot": plot})
             liStyle.setProperty('IsPlayable', 'true')
             addLinkItem({"mode": "nop"}, liStyle)
         else:
             liStyle = xbmcgui.ListItem(startTime + " " + title,
                 thumbnailImage=thumb)
-            # liStyle.setInfo(type="Video", infoLabels={"Title" : title,
-                # "Label": title,
-                # "Plot": plot})
             liStyle.setProperty('IsPlayable', 'true')
             addLinkItem({"mode": "play",
                 "path_id": videoUrl}, liStyle)
@@ -267,7 +261,6 @@ def show_ondemand_index(index, pathId):
     dir = raiplay.getProgrammeList(raiplay.baseUrl + pathId.replace(" ", "%20"))
     for item in dir[index]:
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
-        #xbmc.log(item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
         addDirectoryItem({"mode": "ondemand", "path_id": item["PathID"], "sub_type": "PLR programma Page"}, liStyle)
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_LABEL)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -294,7 +287,6 @@ def show_ondemand_items(url):
         title = item["name"]
         if "subtitle" in item and item["subtitle"] != "" and item["subtitle"] != item["name"]:
             title = title + " (" + item["subtitle"] + ")"
-        #xbmc.log(item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
         liStyle = xbmcgui.ListItem(title, thumbnailImage=item["images"]["landscape"].replace("[RESOLUTION]", "256x-"))
         liStyle.setProperty('IsPlayable', 'true')
         addLinkItem({"mode": "play",
@@ -361,8 +353,6 @@ def show_search_result(items):
         # Add the server to the URL if missing
         if thumb[:7] != "http://":
             thumb = raiplay.baseUrl + thumb
-        
-        #thumb = ondemand.fixThumbnailUrl(item["image"])
         
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=thumb)
         liStyle.setProperty('IsPlayable', 'true')
