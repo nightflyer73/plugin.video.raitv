@@ -342,7 +342,7 @@ def show_search_result(items):
     raiplay = RaiPlay()
     
     for item in items:
-        liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"])
+        liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"]))
         liStyle.setProperty('IsPlayable', 'true')
         addLinkItem({"mode": "play", "url": item["Url"]}, liStyle)
 
