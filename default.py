@@ -198,7 +198,6 @@ def show_replay_epg(channelId, date):
         elif programme["isPartOf"] and programme["isPartOf"]["images"]["landscape"] != "":
             thumb = programme["isPartOf"]["images"]["landscape"].replace("[RESOLUTION]", "256x-")
         else:
-            raiplay = RaiPlay()
             thumb = raiplay.nothumb
         
         plot = programme["description"]

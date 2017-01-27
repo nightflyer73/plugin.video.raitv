@@ -30,7 +30,6 @@ class RaiPlay:
         
     def getMainMenu(self):
         response = json.load(urllib2.urlopen(self.menuUrl))
-        # TODO: these entries must be filtered in default
         return response["menu"]
 
     # RaiPlay Genere Page
