@@ -358,7 +358,6 @@ def show_search_result(items):
         liStyle.setProperty('IsPlayable', 'true')
         addLinkItem({"mode": "play", "url": item["Url"]}, liStyle)
 
-    #xbmc.executebuiltin("Container.SetViewMode(502)")
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
     
