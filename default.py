@@ -237,7 +237,7 @@ def show_ondemand_root():
 def show_ondemand_programmes(pathId):
     xbmc.log("PathID: " + pathId)
     raiplay = RaiPlay()
-    blocchi = raiplay.getCategory(raiplay.baseUrl + pathId)
+    blocchi = raiplay.getCategory(pathId)
 
     if len(blocchi) > 1:
         xbmc.log("Blocchi: " + str(len(blocchi)))
@@ -260,7 +260,7 @@ def show_ondemand_index(index, pathId):
     xbmc.log("PathID: " + pathId)
     xbmc.log("Index: " + index)
     raiplay = RaiPlay()
-    dir = raiplay.getProgrammeList(raiplay.baseUrl + pathId.replace(" ", "%20"))
+    dir = raiplay.getProgrammeList(pathId)
     for item in dir[index]:
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"]))
         addDirectoryItem({"mode": "ondemand", "path_id": item["PathID"], "sub_type": "PLR programma Page"}, liStyle)
@@ -270,10 +270,6 @@ def show_ondemand_index(index, pathId):
 def show_ondemand_programme(pathId):
     xbmc.log("PathID: " + pathId)
     raiplay = RaiPlay()
-    
-    if pathId.find("://") == -1:
-        pathId = raiplay.baseUrl + pathId
-    
     blocks = raiplay.getProgramme(pathId)
     for block in blocks:
         for set in block["Sets"]:
@@ -284,7 +280,7 @@ def show_ondemand_programme(pathId):
 def show_ondemand_items(url):
     xbmc.log("ContentSet URL: " + url)
     raiplay = RaiPlay()
-    items = raiplay.getContentSet(raiplay.baseUrl + url)
+    items = raiplay.getContentSet(url)
     for item in items:
         title = item["name"]
         if "subtitle" in item and item["subtitle"] != "" and item["subtitle"] != item["name"]:
@@ -303,7 +299,7 @@ def search_ondemand_programmes():
         name = kb.getText().decode('utf8')
         xbmc.log("Searching for programme: " + name)
         raiplay = RaiPlay()
-        dir = raiplay.getProgrammeList(raiplay.baseUrl + raiplay.AzTvShowPath)
+        dir = raiplay.getProgrammeList(raiplay.AzTvShowPath)
         for letter in dir:
             for item in dir[letter]:
                 if item["name"].lower().find(name) != -1:

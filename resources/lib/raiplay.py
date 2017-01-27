@@ -34,26 +34,31 @@ class RaiPlay:
 
     # RaiPlay Genere Page
     # RaiPlay Tipologia Page
-    def getCategory(self, url):
+    def getCategory(self, pathId):
+        url = self.getUrl(pathId)
         response = json.load(urllib2.urlopen(url))
         return response["blocchi"]
   
     # Raiplay Tipologia Item
-    def getProgrammeList(self, url):
+    def getProgrammeList(self, pathId):
+        url = self.getUrl(pathId)
         response = json.load(urllib2.urlopen(url))
         return response
     
     #  PLR programma Page
-    def getProgramme(self, url):
+    def getProgramme(self, pathId):
+        url = self.getUrl(pathId)
         response = json.load(urllib2.urlopen(url))
         return response["Blocks"]
     
     def getContentSet(self, url):
+        url = self.getUrl(url)
         response = json.load(urllib2.urlopen(url))
         return response["items"]
     
     def getVideoUrl(self, pathId):
-        response = json.load(urllib2.urlopen(self.baseUrl + pathId))
+        url = self.getUrl(pathId)
+        response = json.load(urllib2.urlopen(url))
         url = response["video"]["contentUrl"]
         return url
 
