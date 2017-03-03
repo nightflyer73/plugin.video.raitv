@@ -64,6 +64,9 @@ def show_root_menu():
     addDirectoryItem({"mode": "news"}, liStyle)
     liStyle = xbmcgui.ListItem("Aree tematiche")
     addDirectoryItem({"mode": "themes"}, liStyle)
+    liStyle = xbmcgui.ListItem("Programmi sottotitolati")
+    addDirectoryItem({"mode": "get_last_content_by_tag",
+        "tags": "SOTTOTITOLATO"}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_tg_root():
@@ -110,13 +113,20 @@ def show_tgr_list(mode, url):
                 "url": item["url"]}, liStyle)            
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
-def play(url, pathId=""):
+def play(url, pathId="", srt=[]):
     xbmc.log("Playing...")
         
     if pathId != "":
         xbmc.log("PathID: " + pathId)
         raiplay = RaiPlay()
-        url = raiplay.getVideoUrl(pathId)
+        metadata = raiplay.getVideoMetadata(pathId)
+        url = metadata["contentUrl"]
+        srtUrl = metadata["subtitles"]
+        if srtUrl != "":
+            xbmc.log("SRT URL: " + srtUrl)
+            srtFile = raiplay.fixSRT(srtUrl)
+            xbmc.log("SRT file: " + srtFile)
+            srt.append(srtFile)
 
     # Handle RAI relinker
     if url[:53] == "http://mediapolis.rai.it/relinker/relinkerServlet.htm" or \
@@ -140,6 +150,8 @@ def play(url, pathId=""):
     
     # Play the item
     item=xbmcgui.ListItem(path=url + '|User-Agent=' + urllib.quote_plus(Relinker.UserAgent))
+    if len(srt) > 0:
+        item.setSubtitles(srt)
     xbmcplugin.setResolvedUrl(handle=handle, succeeded=True, listitem=item)
 
 def show_tv_channels():
@@ -344,7 +356,7 @@ def show_search_result(items):
     for item in items:
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"]))
         liStyle.setProperty('IsPlayable', 'true')
-        addLinkItem({"mode": "play", "url": item["Url"]}, liStyle)
+        addLinkItem({"mode": "play", "path_id": item["PathID"]}, liStyle)
 
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
