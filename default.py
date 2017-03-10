@@ -282,7 +282,8 @@ def show_ondemand_index(index, pathId):
 def show_ondemand_programme(pathId):
     xbmc.log("PathID: " + pathId)
     raiplay = RaiPlay()
-    blocks = raiplay.getProgramme(pathId)
+    programme = raiplay.getProgramme(pathId)
+    blocks = programme["Blocks"]
     for block in blocks:
         for set in block["Sets"]:
             liStyle = xbmcgui.ListItem(set["Name"])

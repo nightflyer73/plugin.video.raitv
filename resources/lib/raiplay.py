@@ -53,8 +53,8 @@ class RaiPlay:
     def getProgramme(self, pathId):
         url = self.getUrl(pathId)
         response = json.load(urllib2.urlopen(url))
-        return response["Blocks"]
-    
+        return response
+        
     def getContentSet(self, url):
         url = self.getUrl(url)
         response = json.load(urllib2.urlopen(url))
