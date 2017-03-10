@@ -283,11 +283,18 @@ def show_ondemand_programme(pathId):
     xbmc.log("PathID: " + pathId)
     raiplay = RaiPlay()
     programme = raiplay.getProgramme(pathId)
-    blocks = programme["Blocks"]
-    for block in blocks:
-        for set in block["Sets"]:
-            liStyle = xbmcgui.ListItem(set["Name"])
-            addDirectoryItem({"mode": "ondemand_items", "url": set["url"]}, liStyle)
+    
+    if programme["infoProg"]["tipologia"][0]["nome"] == "Film":
+        liStyle = xbmcgui.ListItem(programme["infoProg"]["name"], thumbnailImage=raiplay.getThumbnailUrl(programme["infoProg"]["images"]["landscape"]))
+        liStyle.setProperty('IsPlayable', 'true')
+        addLinkItem({"mode": "play",
+            "path_id": programme["pathFirstItem"]}, liStyle)
+    else:
+        blocks = programme["Blocks"]
+        for block in blocks:
+            for set in block["Sets"]:
+                liStyle = xbmcgui.ListItem(set["Name"])
+                addDirectoryItem({"mode": "ondemand_items", "url": set["url"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_ondemand_items(url):
