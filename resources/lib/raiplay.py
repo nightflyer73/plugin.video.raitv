@@ -17,7 +17,10 @@ class RaiPlay:
     noThumbUrl = "http://www.rai.it/cropgd/256x144/dl/components/img/imgPlaceholder.png"
     
     def getCountry(self):
-        response = urllib2.urlopen(self.localizeUrl).read()
+        try:
+            response = urllib2.urlopen(self.localizeUrl).read()
+        except urllib2.HTTPError:
+            response = "ERROR"
         return response
         
     def getChannels(self):
