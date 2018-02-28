@@ -7,6 +7,9 @@ from tempfile import mkstemp
 from HTMLParser import HTMLParser
 
 class RaiPlay:
+    # Raiplay android app
+    UserAgent = "Dalvik/1.6.0 (Linux; U; Android 4.2.2; GT-I9105P Build/JDQ39)"
+    
     # From http://www.raiplay.it/mobile/prod/config/RaiPlay_Config.json
     baseUrl = "http://www.rai.it/"
     channelsUrl = "http://www.rai.it/dl/RaiPlay/2016/PublishingBlock-9a2ff311-fcf0-4539-8f8f-c4fee2a71d58.html?json"
@@ -15,6 +18,12 @@ class RaiPlay:
     palinsestoUrl = "http://www.rai.it/dl/palinsesti/Page-e120a813-1b92-4057-a214-15943d95aa68-json.html?canale=[nomeCanale]&giorno=[dd-mm-yyyy]"
     AzTvShowPath = "/dl/RaiTV/RaiPlayMobile/Prod/Config/programmiAZ-elenco.json"
     noThumbUrl = "http://www.rai.it/cropgd/256x144/dl/components/img/imgPlaceholder.png"
+    
+    def __init__(self):
+        opener = urllib2.build_opener()
+        # Set User-Agent
+        opener.addheaders = [('User-Agent', self.UserAgent)]
+        urllib2.install_opener(opener)
     
     def getCountry(self):
         try:
