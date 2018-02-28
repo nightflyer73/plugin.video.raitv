@@ -136,10 +136,10 @@ def play(url, pathId="", srt=[]):
         xbmc.log("Relinker URL: " + url)
         relinker = Relinker()
         url = relinker.getURL(url)
-        
+    
     # Add the server to the URL if missing
-    if url !="" and url.find("://") == -1:
-        url = raiplay.baseUrl + url
+    if url[0] == "/":
+        url = raiplay.baseUrl[:-1] + url
     xbmc.log("Media URL: " + url)
 
     # It seems that all .ram files I found are not working
