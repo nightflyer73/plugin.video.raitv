@@ -141,13 +141,6 @@ def play(url, pathId="", srt=[]):
     if url[0] == "/":
         url = raiplay.baseUrl[:-1] + url
     xbmc.log("Media URL: " + url)
-
-    # It seems that all .ram files I found are not working
-    # because upstream file is no longer present
-    if url[-4:].lower() == ".ram":
-        dialog = xbmcgui.Dialog()
-        dialog.ok("Errore", "I file RealAudio (.ram) non sono supportati.")
-        return
     
     # Play the item
     item=xbmcgui.ListItem(path=url + '|User-Agent=' + urllib.quote_plus(Relinker.UserAgent))
