@@ -44,6 +44,7 @@ def addDirectoryItem(parameters, li):
 def addLinkItem(parameters, li, url=""):
     if url == "":
         url = sys.argv[0] + '?' + urllib.urlencode(parameters)
+    li.setProperty('IsPlayable', 'true')
     return xbmcplugin.addDirectoryItem(handle=handle, url=url, 
         listitem=li, isFolder=False)
 
@@ -108,7 +109,7 @@ def show_tgr_list(mode, url):
                 "url": item["url"]}, liStyle)
         else:
             liStyle = xbmcgui.ListItem(item["title"])
-            liStyle.setProperty('IsPlayable', 'true')
+            liStyle.setInfo("video", {})
             addLinkItem({"mode": "play",
                 "url": item["url"]}, liStyle)            
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -158,7 +159,7 @@ def show_tv_channels():
     raiplay = RaiPlay()
     for station in tv_stations:
         liStyle = xbmcgui.ListItem(station["channel"], thumbnailImage=raiplay.getThumbnailUrl(station["transparent-icon"]))
-        liStyle.setProperty('IsPlayable', 'true')
+        liStyle.setInfo("video", {})
         addLinkItem({"mode": "play",
             "url": station["video"]["contentUrl"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -167,7 +168,7 @@ def show_radio_stations():
     for station in radio_stations:
         if station["flussi"]["liveAndroid"] != "":
             liStyle = xbmcgui.ListItem(station["nome"], thumbnailImage="http://www.rai.it" + station["chImage"])
-            liStyle.setProperty('IsPlayable', 'true')
+            liStyle.setInfo("audio", {})
             addLinkItem({"mode": "play",
                 "url": station["flussi"]["liveAndroid"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -225,12 +226,12 @@ def show_replay_epg(channelId, date):
             # programme is not available
             liStyle = xbmcgui.ListItem(startTime + " [I]" + title + "[/I]",
                 thumbnailImage=thumb)
-            liStyle.setProperty('IsPlayable', 'true')
+            liStyle.setInfo("video", {})
             addLinkItem({"mode": "nop"}, liStyle)
         else:
             liStyle = xbmcgui.ListItem(startTime + " " + title,
                 thumbnailImage=thumb)
-            liStyle.setProperty('IsPlayable', 'true')
+            liStyle.setInfo("video", {})
             addLinkItem({"mode": "play",
                 "path_id": videoUrl}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -287,7 +288,7 @@ def show_ondemand_programme(pathId):
     if programme["infoProg"]["tipologia"][0]["nome"] == "Film":
         if "pathFirstItem" in programme:
             liStyle = xbmcgui.ListItem(programme["infoProg"]["name"], thumbnailImage=raiplay.getThumbnailUrl(programme["infoProg"]["images"]["landscape"]))
-            liStyle.setProperty('IsPlayable', 'true')
+            liStyle.setInfo("video", {})
             addLinkItem({"mode": "play",
                 "path_id": programme["pathFirstItem"]}, liStyle)
     else:
@@ -307,7 +308,7 @@ def show_ondemand_items(url):
         if "subtitle" in item and item["subtitle"] != "" and item["subtitle"] != item["name"]:
             title = title + " (" + item["subtitle"] + ")"
         liStyle = xbmcgui.ListItem(title, thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"]))
-        liStyle.setProperty('IsPlayable', 'true')
+        liStyle.setInfo("video", {})
         addLinkItem({"mode": "play",
             "path_id": item["pathID"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
@@ -364,7 +365,7 @@ def show_search_result(items):
     
     for item in items:
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"]))
-        liStyle.setProperty('IsPlayable', 'true')
+        liStyle.setInfo("video", {})
         addLinkItem({"mode": "play", "path_id": item["PathID"]}, liStyle)
 
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
