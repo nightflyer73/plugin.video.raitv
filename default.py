@@ -65,9 +65,6 @@ def show_root_menu():
     addDirectoryItem({"mode": "news"}, liStyle)
     liStyle = xbmcgui.ListItem("Aree tematiche")
     addDirectoryItem({"mode": "themes"}, liStyle)
-    liStyle = xbmcgui.ListItem("Programmi sottotitolati")
-    addDirectoryItem({"mode": "get_last_content_by_tag",
-        "tags": "SOTTOTITOLATO"}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
 def show_tg_root():
@@ -357,7 +354,8 @@ def show_search_result(items):
     for item in items:
         liStyle = xbmcgui.ListItem(item["name"], thumbnailImage=raiplay.getThumbnailUrl(item["images"]["landscape"]))
         liStyle.setInfo("video", {})
-        addLinkItem({"mode": "play", "path_id": item["PathID"]}, liStyle)
+        # Using "Url" because "PathID" is broken upstream :-/
+        addLinkItem({"mode": "play", "url": item["Url"]}, liStyle)
 
     xbmcplugin.addSortMethod(handle, xbmcplugin.SORT_METHOD_NONE)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
