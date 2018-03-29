@@ -1,10 +1,6 @@
 ﻿# -*- coding: utf-8 -*-
 import urllib2
 import json
-import re
-import os
-from tempfile import mkstemp
-from HTMLParser import HTMLParser
 
 class RaiPlay:
     # Raiplay android app
@@ -94,34 +90,4 @@ class RaiPlay:
             url = self.getUrl(pathId)
             url = url.replace("[RESOLUTION]", "256x-")
         return url
-    
-    def fixSRT(self, url):
-        # SubRip format
-        # http://forum.doom9.org/showthread.php?p=470941#post470941
-        hp = HTMLParser()
-        output = ""
-
-        data = urllib2.urlopen(url)
-        for line in data.readlines():
-            match = re.search(r"([:,\d]+)\s-->\s([:,\d]+)", line, re.DOTALL)
-            if match is not None:
-                # Fix timecode format HH:MM:SS,MIL
-                startTime = match.group(1)
-                if len(startTime) == 16:
-                    startTime = startTime[:-4]
-                elif len(startTime) == 8:
-                    startTime += ",000"
-                endTime = match.group(2)
-                if len(endTime) == 16:
-                    endTime = endTime[:-4]
-                elif len(endTime) == 8:
-                    endTime += ",000"
-                output += "{start} --> {end}\r\n".format(start=startTime,end=endTime)
-            else:
-                # Fix text
-                output += hp.unescape(line)
-            
-        f, path = mkstemp(suffix=".it.srt")
-        os.write(f, output.encode('cp1252'))
-        os.close(f)
-        return path
+ 

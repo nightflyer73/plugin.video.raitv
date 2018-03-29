@@ -125,9 +125,7 @@ def play(url, pathId="", srt=[]):
         srtUrl = metadata["subtitles"]
         if srtUrl != "":
             xbmc.log("SRT URL: " + srtUrl)
-            srtFile = raiplay.fixSRT(srtUrl)
-            xbmc.log("SRT file: " + srtFile)
-            srt.append(srtFile)
+            srt.append(srtUrl)
 
     # Handle RAI relinker
     if url[:53] == "http://mediapolis.rai.it/relinker/relinkerServlet.htm" or \
