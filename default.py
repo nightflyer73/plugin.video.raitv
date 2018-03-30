@@ -12,7 +12,7 @@ import StorageServer
 from resources.lib.tgr import TGR
 from resources.lib.search import Search
 from resources.lib.raiplay import RaiPlay
-from resources.lib.radiorai import RadioRai
+from resources.lib.raiplayradio import RaiPlayRadio
 from resources.lib.relinker import Relinker
 import resources.lib.utils as utils
 
@@ -28,7 +28,7 @@ handle = int(sys.argv[1])
 # Cache channels for 1 hour
 cache = StorageServer.StorageServer("plugin.video.raitv", 1) # (Your plugin name, Cache time in hours)
 tv_stations = cache.cacheFunction(RaiPlay().getChannels)
-radio_stations = cache.cacheFunction(RadioRai().getChannels)
+radio_stations = cache.cacheFunction(RaiPlayRadio().getChannels)
 
 # utility functions
 def parameters_string_to_dict(parameters):
@@ -55,9 +55,11 @@ def show_root_menu():
     addDirectoryItem({"mode": "live_tv"}, liStyle)
     liStyle = xbmcgui.ListItem("Dirette Radio")
     addDirectoryItem({"mode": "live_radio"}, liStyle)
-    liStyle = xbmcgui.ListItem("Replay")
-    addDirectoryItem({"mode": "replay"}, liStyle)
-    liStyle = xbmcgui.ListItem("Programmi On Demand")
+    liStyle = xbmcgui.ListItem("Replay TV")
+    addDirectoryItem({"mode": "replay", "media": "tv"}, liStyle)
+    liStyle = xbmcgui.ListItem("Replay Radio")
+    addDirectoryItem({"mode": "replay", "media": "radio"}, liStyle)
+    liStyle = xbmcgui.ListItem("Programmi TV On Demand")
     addDirectoryItem({"mode": "ondemand"}, liStyle)
     liStyle = xbmcgui.ListItem("Archivio Telegiornali")
     addDirectoryItem({"mode": "tg"}, liStyle)
@@ -113,13 +115,21 @@ def show_tgr_list(mode, url):
 
 def play(url, pathId="", srt=[]):
     xbmc.log("Playing...")
-        
+    
     if pathId != "":
         xbmc.log("PathID: " + pathId)
-        raiplay = RaiPlay()
-        metadata = raiplay.getVideoMetadata(pathId)
-        url = metadata["contentUrl"]
-        srtUrl = metadata["subtitles"]
+        # Ugly hack
+        if pathId[:7] == "/audio/":
+            raiplayradio = RaiPlayRadio()
+            metadata = raiplayradio.getAudioMetadata(pathId)
+            url = metadata["contentUrl"]
+            srtUrl = ""
+        else:
+            raiplay = RaiPlay()
+            metadata = raiplay.getVideoMetadata(pathId)
+            url = metadata["contentUrl"]
+            srtUrl = metadata["subtitles"]
+            
         if srtUrl != "":
             xbmc.log("SRT URL: " + srtUrl)
             srt.append(srtUrl)
@@ -154,14 +164,13 @@ def show_tv_channels():
 
 def show_radio_stations():
     for station in radio_stations:
-        if station["flussi"]["liveAndroid"] != "":
-            liStyle = xbmcgui.ListItem(station["nome"], thumbnailImage="http://www.rai.it" + station["chImage"])
-            liStyle.setInfo("audio", {})
-            addLinkItem({"mode": "play",
-                "url": station["flussi"]["liveAndroid"]}, liStyle)
+        liStyle = xbmcgui.ListItem(station["channel"], thumbnailImage=station["stillFrame"])
+        liStyle.setInfo("audio", {})
+        addLinkItem({"mode": "play",
+            "url": station["audio"]["castUrl"]}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
-def show_replay_dates():
+def show_replay_dates(media):
     days = ["Domenica", "Lunedì", "Martedì", "Mercoledì", "Giovedì", "Venerdì", "Sabato"]
     months = ["gennaio", "febbraio", "marzo", "aprile", "maggio", "giugno", 
         "luglio", "agosto", "settembre", "ottobre", "novembre", "dicembre"]
@@ -172,19 +181,30 @@ def show_replay_dates():
         day_str = days[int(day.strftime("%w"))] + " " + day.strftime("%d") + " " + months[int(day.strftime("%m"))-1]
         liStyle = xbmcgui.ListItem(day_str)
         addDirectoryItem({"mode": "replay",
+            "media": media,
             "date": day.strftime("%d-%m-%Y")}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
     
-def show_replay_channels(date):
+def show_replay_tv_channels(date):
     raiplay = RaiPlay()
     for station in tv_stations:
         liStyle = xbmcgui.ListItem(station["channel"], thumbnailImage=raiplay.getThumbnailUrl(station["transparent-icon"]))
         addDirectoryItem({"mode": "replay",
+            "media": "tv",
             "channel_id": station["channel"],
             "date": date}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+    
+def show_replay_radio_channels(date):
+    for station in radio_stations:
+        liStyle = xbmcgui.ListItem(station["channel"], thumbnailImage=station["stillFrame"])
+        addDirectoryItem({"mode": "replay",
+            "media": "radio",
+            "channel_id": station["channel"].encode("utf-8"),
+            "date": date}, liStyle)
+    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
-def show_replay_epg(channelId, date):
+def show_replay_tv_epg(date, channelId):
     xbmc.log("Showing EPG for " + channelId + " on " + date)
     raiplay = RaiPlay()
     programmes = raiplay.getProgrammes(channelId, date)
@@ -224,6 +244,46 @@ def show_replay_epg(channelId, date):
                 "path_id": videoUrl}, liStyle)
     xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
 
+def show_replay_radio_epg(date, channelId):
+    xbmc.log("Showing EPG for " + channelId + " on " + date)
+    raiplayradio = RaiPlayRadio()
+    programmes = raiplayradio.getProgrammes(channelId.decode("utf-8"), date)
+    
+    for programme in programmes:
+        if not programme:
+            continue
+    
+        startTime = programme["timePublished"]
+        title = programme["name"]
+        
+        if programme["images"]["landscape"] != "":
+            thumb = raiplayradio.getThumbnailUrl(programme["images"]["square"])
+        elif programme["isPartOf"] and programme["isPartOf"]["images"]["square"] != "":
+            thumb = raiplayradio.getThumbnailUrl(programme["isPartOf"]["images"]["square"])
+        else:
+            thumb = raiplayradio.noThumbUrl
+        
+        plot = programme["description"]
+        
+        if programme["hasAudio"]:
+            audioUrl = programme["pathID"]
+        else:
+            audioUrl = None
+        
+        if audioUrl is None:
+            # programme is not available
+            liStyle = xbmcgui.ListItem(startTime + " [I]" + title + "[/I]",
+                thumbnailImage=thumb)
+            liStyle.setInfo("audio", {})
+            addLinkItem({"mode": "nop"}, liStyle)
+        else:
+            liStyle = xbmcgui.ListItem(startTime + " " + title,
+                thumbnailImage=thumb)
+            liStyle.setInfo("audio", {})
+            addLinkItem({"mode": "play",
+                "path_id": audioUrl}, liStyle)
+    xbmcplugin.endOfDirectory(handle=handle, succeeded=True)
+    
 def show_ondemand_root():
     raiplay = RaiPlay()
     items = raiplay.getMainMenu()
@@ -370,6 +430,7 @@ params = parameters_string_to_dict(sys.argv[2])
 # TODO: support content_type parameter, provided by XBMC Frodo.
 content_type = str(params.get("content_type", ""))
 mode = str(params.get("mode", ""))
+media = str(params.get("media", ""))
 behaviour = str(params.get("behaviour", ""))
 url = str(params.get("url", ""))
 date = str(params.get("date", ""))
@@ -387,11 +448,17 @@ elif mode == "live_radio":
 
 elif mode == "replay":
     if date == "":
-        show_replay_dates()
+        show_replay_dates(media)
     elif channelId == "":
-        show_replay_channels(date)
+        if media == "tv":
+            show_replay_tv_channels(date)
+        else:
+            show_replay_radio_channels(date)
     else:
-        show_replay_epg(channelId, date)
+        if media == "tv":
+            show_replay_tv_epg(date, channelId)
+        else:
+            show_replay_radio_epg(date, channelId)
         
 elif mode == "nop":
     dialog = xbmcgui.Dialog()
