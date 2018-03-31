@@ -223,8 +223,6 @@ def show_replay_tv_epg(date, channelId):
         else:
             thumb = raiplay.noThumbUrl
         
-        plot = programme["description"]
-        
         if programme["hasVideo"]:
             videoUrl = programme["pathID"]
         else:
@@ -262,8 +260,6 @@ def show_replay_radio_epg(date, channelId):
             thumb = raiplayradio.getThumbnailUrl(programme["isPartOf"]["images"]["square"])
         else:
             thumb = raiplayradio.noThumbUrl
-        
-        plot = programme["description"]
         
         if programme["hasAudio"]:
             audioUrl = programme["pathID"]
