@@ -336,7 +336,13 @@ def show_ondemand_programme(pathId):
     if (len(programme["infoProg"]["tipologia"]) > 0) and programme["infoProg"]["tipologia"][0]["nome"] == "Film":
         if "pathFirstItem" in programme:
             liStyle = xbmcgui.ListItem(programme["infoProg"]["name"], thumbnailImage=raiplay.getThumbnailUrl(programme["infoProg"]["images"]["landscape"]))
-            liStyle.setInfo("video", {})
+            liStyle.setInfo("video", {
+                "Plot": programme["infoProg"]["description"],
+                "Cast": programme["infoProg"]["interpreti"].split(", "),
+                "Director": programme["infoProg"]["regia"],
+                "Country": programme["infoProg"]["country"],
+                "Year": programme["infoProg"]["anno"],
+                })
             addLinkItem({"mode": "play",
                 "path_id": programme["pathFirstItem"]}, liStyle)
     else:
