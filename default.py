@@ -333,7 +333,7 @@ def show_ondemand_programme(pathId):
     raiplay = RaiPlay()
     programme = raiplay.getProgramme(pathId)
     
-    if programme["infoProg"]["tipologia"][0]["nome"] == "Film":
+    if (len(programme["infoProg"]["tipologia"]) > 0) and programme["infoProg"]["tipologia"][0]["nome"] == "Film":
         if "pathFirstItem" in programme:
             liStyle = xbmcgui.ListItem(programme["infoProg"]["name"], thumbnailImage=raiplay.getThumbnailUrl(programme["infoProg"]["images"]["landscape"]))
             liStyle.setInfo("video", {})
