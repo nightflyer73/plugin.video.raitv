@@ -8,13 +8,14 @@ class RaiPlayRadio:
     UserAgent = "okhttp/3.9.1"
     MediapolisUserAgent = "Radio/3.0.2 (Linux;Android 4.2.2) ExoPlayerLib/2.5.4"
     
+    noThumbUrl = "http://www.raiplayradio.it/dl/components/img/radio/player/placeholder_img.png"
+    
     # http://www.rai.it/dl/rairadio/mobile/config/RaiRadioConfig.json
     baseUrl = "http://www.raiplayradio.it/"
     channelsUrl = "http://www.raiplayradio.it/dirette/ContentSet-8e2a3414-bbfd-4a72-852b-7d827dc00e7e.html?json"
     localizeUrl = "http://mediapolisgs.rai.it/relinker/relinkerServlet.htm?cont=201342"
     palinsestoUrl = "http://www.raiplayradio.it/dl/palinsesti/Page-a47ba852-d24f-44c2-8abb-0c9f90187a3e-json.html?canale=[nomeCanale]&giorno=[dd-mm-yyyy]&mode=light"
     AzTvShowPath = "/dl/RaiTV/RaiRadioMobile/Prod/Config/programmiAZ-elenco.json"
-    noThumbUrl = "http://www.rai.it/cropgd/256x144/dl/components/img/imgPlaceholder.png"
     
     def __init__(self):
         opener = urllib2.build_opener()

@@ -7,6 +7,8 @@ class RaiPlay:
     UserAgent = "Dalvik/1.6.0 (Linux; U; Android 4.2.2; GT-I9105P Build/JDQ39)"
     MediapolisUserAgent = "Android 4.2.2 (smart) / RaiPlay 2.1.3 / WiFi"
     
+    noThumbUrl = "http://www.rai.it/dl/components/img/imgPlaceholder.png"
+    
     # From http://www.raiplay.it/mobile/prod/config/RaiPlay_Config.json
     baseUrl = "https://www.raiplay.it/"
     channelsUrl = "http://www.rai.it/dl/RaiPlay/2016/PublishingBlock-9a2ff311-fcf0-4539-8f8f-c4fee2a71d58.html?json"
@@ -14,7 +16,6 @@ class RaiPlay:
     menuUrl = "http://www.rai.it/dl/RaiPlay/2016/menu/PublishingBlock-20b274b1-23ae-414f-b3bf-4bdc13b86af2.html?homejson"
     palinsestoUrl = "https://www.raiplay.it/dl/palinsesti/Page-e120a813-1b92-4057-a214-15943d95aa68-json.html?canale=[nomeCanale]&giorno=[dd-mm-yyyy]"
     AzTvShowPath = "/dl/RaiTV/RaiPlayMobile/Prod/Config/programmiAZ-elenco.json"
-    noThumbUrl = "http://www.rai.it/cropgd/256x144/dl/components/img/imgPlaceholder.png"
     
     def __init__(self):
         opener = urllib2.build_opener()
